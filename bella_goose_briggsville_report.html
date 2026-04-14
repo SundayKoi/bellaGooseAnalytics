@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bella Goose Coffee &#8212; Briggsville Location Analysis</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
+.header{background:linear-gradient(135deg,#1e293b 0%,#334155 100%);padding:24px 32px;border-bottom:3px solid #f59e0b}
+.header h1{font-size:28px;font-weight:700;color:#fbbf24}
+.header p{color:#94a3b8;margin-top:4px;font-size:14px}
+.tabs{display:flex;gap:4px;padding:12px 32px;background:#1e293b;border-bottom:1px solid #334155;flex-wrap:wrap}
+.tab{padding:10px 20px;border-radius:8px 8px 0 0;cursor:pointer;font-size:14px;font-weight:500;color:#94a3b8;background:#0f172a;border:1px solid #334155;border-bottom:none;transition:all 0.2s}
+.tab:hover{color:#fbbf24;background:#1a2332}
+.tab.active{color:#fbbf24;background:#0f172a;border-color:#f59e0b;border-bottom:2px solid #0f172a;margin-bottom:-1px}
+.page{display:none;padding:24px 32px;max-width:1400px;margin:0 auto}
+.page.active{display:block}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.kpi{background:#1e293b;border-radius:12px;padding:20px;border:1px solid #334155}
+.kpi .label{font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px}
+.kpi .value{font-size:28px;font-weight:700;color:#fbbf24;margin-top:4px}
+.kpi .sub{font-size:12px;color:#64748b;margin-top:4px}
+.kpi.alert .value{color:#ef4444}
+.kpi.good .value{color:#22c55e}
+.chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(450px,1fr));gap:20px;margin-bottom:24px}
+.chart-box{background:#1e293b;border-radius:12px;padding:20px;border:1px solid #334155}
+.chart-box h3{font-size:16px;color:#f8fafc;margin-bottom:12px}
+.chart-box .insight{font-size:13px;color:#94a3b8;margin-top:12px;padding:10px;background:#0f172a;border-radius:8px;border-left:3px solid #f59e0b}
+.full-width{grid-column:1/-1}
+.action-section{margin-bottom:24px}
+.action-section h3{font-size:18px;color:#fbbf24;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #334155}
+.action{background:#1e293b;border-radius:12px;padding:20px;margin-bottom:12px;border:1px solid #334155;border-left:4px solid #f59e0b}
+.action.high{border-left-color:#ef4444}
+.action.medium{border-left-color:#f59e0b}
+.action.low{border-left-color:#22c55e}
+.action h4{font-size:15px;color:#f8fafc;margin-bottom:6px}
+.action .detail{font-size:13px;color:#94a3b8;line-height:1.6}
+.action .impact{display:inline-block;margin-top:8px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.action.high .impact{background:#ef4444/20;color:#fca5a5;background:rgba(239,68,68,0.15)}
+.action.medium .impact{background:rgba(245,158,11,0.15);color:#fcd34d}
+.action.low .impact{background:rgba(34,197,94,0.15);color:#86efac}
+.warn-banner{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:12px;padding:16px 20px;margin-bottom:24px;color:#fca5a5;font-size:14px}
+.warn-banner strong{color:#ef4444}
+.note{font-size:13px;color:#64748b;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>Bella Goose Coffee &#8212; Briggsville</h1>
+<p>Production Hub + Seasonal Retail Window &#8226; Data: May 2025 &#8211; Mar 2026 &#8226; All times Mountain</p>
+</div>
+<div class="tabs">
+<div class="tab active" onclick="showPage('overview')">Overview</div>
+<div class="tab" onclick="showPage('products')">Products</div>
+<div class="tab" onclick="showPage('labor')">Labor</div>
+<div class="tab" onclick="showPage('retail')">Retail Window</div>
+<div class="tab" onclick="showPage('actions')">Action Plan</div>
+</div>
+
+<div id="overview" class="page active">
+<div class="warn-banner">
+<strong>Key Finding:</strong> This location operates as a year-round production hub (baking, syrup, roasting) with a seasonal retail window (May&#8211;Sep). 
+Annual labor cost ($230,959) dwarfs retail revenue ($87,929) because most labor supports all Bella Goose locations, not just this storefront.
+</div>
+<div class="kpi-row">
+<div class="kpi"><div class="label">Retail Revenue</div><div class="value">$87.9K</div><div class="sub">May&#8211;Sep window only</div></div>
+<div class="kpi"><div class="label">Total Orders</div><div class="value">5,037</div><div class="sub">78 operating days</div></div>
+<div class="kpi"><div class="label">Avg Order Value</div><div class="value">$17.46</div><div class="sub">2.4 items per order</div></div>
+<div class="kpi"><div class="label">Production Labor</div><div class="value alert">$220.4K</div><div class="sub">Year-round, supports all locations</div></div>
+<div class="kpi"><div class="label">Retail Labor</div><div class="value">$10.5K</div><div class="sub">Baristas + runners (seasonal)</div></div>
+<div class="kpi"><div class="label">Tips Earned</div><div class="value good">$8,039</div><div class="sub">46.7% tip rate</div></div>
+<div class="kpi"><div class="label">Discounts Given</div><div class="value alert">$14,143</div><div class="sub">13.9% of gross sales</div></div>
+<div class="kpi"><div class="label">Cash Payments</div><div class="value">34.5%</div><div class="sub">Higher than typical</div></div>
+</div>
+<div class="chart-grid">
+<div class="chart-box"><h3>Revenue vs Total Labor by Month</h3><canvas id="revLaborChart"></canvas>
+<div class="insight">Revenue only exists May&#8211;Sep from the retail window. Production labor runs year-round to supply all Bella Goose locations with baked goods, syrups, and roasted beans.</div></div>
+<div class="chart-box"><h3>Monthly Retail Revenue</h3><canvas id="monthlyRevChart"></canvas>
+<div class="insight">August is the peak month at $25K, consistent with late-summer tourist traffic. The ramp from May ($10.8K) to August is steep &#8212; the window opens mid-season.</div></div>
+</div>
+</div>
+
+<div id="products" class="page">
+<div class="kpi-row">
+<div class="kpi"><div class="label">Top Seller</div><div class="value" style="font-size:22px">Cheddar Bacon Sammie</div><div class="sub">$10.4K revenue, 1,128 sold</div></div>
+<div class="kpi"><div class="label">Top Drink</div><div class="value" style="font-size:22px">Salted Caramel Latte</div><div class="sub">$8.8K revenue, 1,405 sold</div></div>
+<div class="kpi"><div class="label">Drink vs Food Split</div><div class="value">48% / 52%</div><div class="sub">Near-even, food edges out drinks</div></div>
+<div class="kpi"><div class="label">Modifier Usage</div><div class="value good">80.2%</div><div class="sub">Strong customization culture</div></div>
+</div>
+<div class="chart-grid">
+<div class="chart-box"><h3>Top 15 Items by Revenue</h3><canvas id="topItemsChart"></canvas>
+<div class="insight">Cheddar Bacon Sammie leads at $10.4K &#8212; sandwiches and house-made food items are a major draw. The Salted Caramel Latte dominates drinks with 1,405 units sold.</div></div>
+<div class="chart-box"><h3>Drink vs Food Revenue Split</h3><canvas id="drinkFoodChart"></canvas>
+<div class="insight">Unlike many coffee shops that are 70%+ drinks, Briggsville runs nearly 50/50. The house bakery and scratch kitchen are a genuine differentiator.</div></div>
+<div class="chart-box"><h3>Top Modifiers</h3><canvas id="modChart"></canvas>
+<div class="insight">"Whole" milk dominates. Oat and Almond alt-milks represent a significant share. +1 Shot and Cold Foam are natural upsell opportunities worth tracking revenue impact.</div></div>
+<div class="chart-box"><h3>Payment Methods</h3><canvas id="paymentChart"></canvas>
+<div class="insight">34.5% cash is notably high. Cash transactions avoid processing fees but carry handling costs and loss risk. Consider whether a small card discount could shift behavior.</div></div>
+</div>
+</div>
+
+<div id="labor" class="page">
+<div class="warn-banner">
+<strong>Context:</strong> Most labor here is production (baking, syrup-making, roasting) that supports the entire Bella Goose operation across all locations. 
+The retail storefront ("Briggsville Barista" roles) accounts for only $10.5K of the $231K total labor.
+</div>
+<div class="kpi-row">
+<div class="kpi"><div class="label">Total Labor Cost</div><div class="value">$231.0K</div><div class="sub">11,455 total hours</div></div>
+<div class="kpi"><div class="label">Production Labor</div><div class="value">$220.4K</div><div class="sub">95.4% of total labor</div></div>
+<div class="kpi"><div class="label">Retail Labor</div><div class="value good">$10.5K</div><div class="sub">4.6% of total labor</div></div>
+<div class="kpi"><div class="label">Employees</div><div class="value">29</div><div class="sub">3 managers, 6 bakers, 4 syrup, 1 roaster</div></div>
+</div>
+<div class="chart-grid">
+<div class="chart-box"><h3>Monthly Labor: Production vs Retail</h3><canvas id="laborMonthlyChart"></canvas>
+<div class="insight">Production labor stays at $15&#8211;22K/month year-round regardless of whether the retail window is open. Retail labor only appears May&#8211;Sep.</div></div>
+<div class="chart-box"><h3>Labor Cost by Role</h3><canvas id="laborRoleChart"></canvas>
+<div class="insight">Manager ($64.8K), Syrup Production ($49.4K), and Baker ($44.3K) are the top three. These are production roles that generate wholesale value for the whole company.</div></div>
+</div>
+</div>
+
+<div id="retail" class="page">
+<div class="kpi-row">
+<div class="kpi"><div class="label">Retail Season</div><div class="value" style="font-size:22px">May &#8211; Sep</div><div class="sub">78 operating days</div></div>
+<div class="kpi"><div class="label">Weekend Avg/Day</div><div class="value good">$1,601</div><div class="sub">39 weekend days</div></div>
+<div class="kpi"><div class="label">Weekday Avg/Day</div><div class="value">$647</div><div class="sub">39 weekday days</div></div>
+<div class="kpi"><div class="label">Weekend Premium</div><div class="value good">+147%</div><div class="sub">Weekends earn 2.5x weekdays</div></div>
+</div>
+<div class="chart-grid">
+<div class="chart-box"><h3>Revenue by Day of Week (Operating Season)</h3><canvas id="dowChart"></canvas>
+<div class="insight">Saturday and Sunday dominate at $30&#8211;32K each. Friday and Monday are solid at $10&#8211;14K. Mid-week days (Tue&#8211;Thu) barely register, suggesting the shop only opens on select days.</div></div>
+<div class="chart-box"><h3>Average Revenue per Operating Day</h3><canvas id="dowAvgChart"></canvas>
+<div class="insight">Sunday averages $1,699/day, the strongest per-day performance. Saturday at $1,438 is close behind. This is a weekend destination.</div></div>
+<div class="chart-box full-width"><h3>Revenue by Hour of Day (Mountain Time)</h3><canvas id="hourlyChart"></canvas>
+<div class="insight">The 7&#8211;10 AM window generates 78% of all revenue. Peak hour is 8 AM (26% of daily revenue). The shop effectively closes by 1 PM. This is a pure morning operation.</div></div>
+</div>
+</div>
+
+<div id="actions" class="page">
+<div class="kpi-row">
+<div class="kpi"><div class="label">Total Estimated Impact</div><div class="value good">$18&#8211;38K/yr</div><div class="sub">Retail window improvements</div></div>
+<div class="kpi"><div class="label">Actions Identified</div><div class="value">8</div><div class="sub">3 high, 3 medium, 2 low priority</div></div>
+</div>
+
+<div class="action-section">
+<h3>Maximize the Retail Window</h3>
+
+<div class="action high">
+<h4>1. Cut Discounts from 13.9% to Under 5%</h4>
+<div class="detail">
+$14,143 in discounts on $88K revenue is alarming &#8212; that is nearly $1 out of every $7. Audit every active discount: employee meals, loyalty comps, damaged items, "friends and family" markdowns. Set a weekly discount budget of $150 (down from the current $272/week average during retail season). Require manager approval for any single discount over $10. Track discount reasons in Square to identify patterns.
+</div>
+<div class="impact">Estimated impact: $7&#8211;10K/yr recovered revenue</div>
+</div>
+
+<div class="action high">
+<h4>2. Extend Operating Days to Include Thursday and Friday</h4>
+<div class="detail">
+The shop barely operates mid-week (only 1&#8211;3 days each for Tue&#8211;Thu). Friday already shows decent traffic at $13.5K total. Adding consistent Thursday and Friday hours during peak tourist months (June&#8211;August) could capture weekday tourist traffic. Friday averages $900/day when open &#8212; adding 12 more Fridays at even $700/day = $8.4K. Test Thursdays at reduced hours (7&#8211;11 AM only) to manage labor risk.
+</div>
+<div class="impact">Estimated impact: $5&#8211;12K/yr additional revenue</div>
+</div>
+
+<div class="action high">
+<h4>3. Open the Retail Window Earlier (Late April)</h4>
+<div class="detail">
+Production labor is already running in March&#8211;April at $14&#8211;15K/month with zero retail revenue. Opening the retail window in late April (even weekends only) captures shoulder-season tourists and early-season locals. Staff is already on-site for production &#8212; adding a barista shift is incremental. Even 8 weekend days in late April at $800/day adds $6.4K.
+</div>
+<div class="impact">Estimated impact: $4&#8211;8K/yr additional revenue</div>
+</div>
+</div>
+
+<div class="action-section">
+<h3>Optimize Products and Pricing</h3>
+
+<div class="action medium">
+<h4>4. Push Food Combos to Raise AOV from $17.46 to $20+</h4>
+<div class="detail">
+Briggsville already has a strong food game (52% food revenue vs 48% drinks). Lean into this with breakfast combos: "Sammie + Brew" for $12 (vs $12+ a la carte) that feel like a deal but guarantee a 2-item ticket. Train baristas to suggest a scone or cinnamon roll with every drink order. The Cheddar Bacon Sammie at $9 already outsells every drink &#8212; make it the anchor of a "Briggsville Breakfast" combo.
+</div>
+<div class="impact">Estimated impact: $3&#8211;5K/yr from higher AOV</div>
+</div>
+
+<div class="action medium">
+<h4>5. Price Specialty Lattes $0.25&#8211;0.50 Higher</h4>
+<div class="detail">
+The Salted Caramel Latte (1,405 units) is your volume leader at $5.50&#8211;6.25. In a tourist destination, a $0.25 increase to $5.75&#8211;6.50 on all specialty lattes (Salted Caramel, Vanilla Bean, Butter Pecan, Honey Cinnamon, Lavender Mint) is unlikely to dent volume. That covers about 3,000 specialty drinks at $0.25 = $750 in pure margin.
+</div>
+<div class="impact">Estimated impact: $750&#8211;1.5K/yr</div>
+</div>
+
+<div class="action medium">
+<h4>6. Monetize Alt-Milk Modifiers</h4>
+<div class="detail">
+Oat (507 orders) and Almond (243 orders) milk are popular. If not already charging a $0.75 upcharge for alt-milks, implement one. At 750 alt-milk orders/year at $0.75 = $562 in pure margin. Post the upcharge clearly on the menu. For regulars, consider a "loyalty alt-milk" card where every 10th alt-milk drink is free.
+</div>
+<div class="impact">Estimated impact: $500&#8211;750/yr</div>
+</div>
+</div>
+
+<div class="action-section">
+<h3>Strategic Improvements</h3>
+
+<div class="action low">
+<h4>7. Sell Retail Bags of Beans More Aggressively</h4>
+<div class="detail">
+You have an on-site roaster ($25K/yr labor). Bean bags sold 132 units at $17.86 avg = $2,324. This is underperforming for a location that literally roasts beans. Display beans prominently at the register. Offer a "buy a bag, get $1 off your next drink" card. Tourist customers who discover a great roast will buy bags to take home &#8212; this is high-margin revenue with zero additional production labor.
+</div>
+<div class="impact">Estimated impact: $1&#8211;2K/yr from increased bean sales</div>
+</div>
+
+<div class="action low">
+<h4>8. Track Production Output Value Separately</h4>
+<div class="detail">
+The $220K in production labor looks alarming against $88K retail revenue, but it supports all Bella Goose locations. Implement internal transfer pricing in Square or a simple spreadsheet: when production ships baked goods, syrups, or beans to other locations, log the wholesale value. This reveals the true margin of the production hub and helps you make informed decisions about scaling production vs outsourcing.
+</div>
+<div class="impact">Estimated impact: Better decision-making across all locations</div>
+</div>
+</div>
+
+<p class="note">All estimates are annualized based on current retail season patterns. Impact ranges assume partial implementation in Year 1.</p>
+</div>
+<script>
+var MR={"labels": ["2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-11", "2025-12", "2026-03"], "values": [10838.26, 17455.51, 20633.18, 25068.74, 13703.49, 79.8, 48.53, 101.28]};
+var MO={"labels": ["2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-11", "2025-12", "2026-03"], "values": [645, 1051, 1216, 1398, 721, 3, 1, 2]};
+var DR={"labels": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "values": [10911.69, 9.5, 0.0, 818.17, 13506.73, 30165.66, 32287.43]};
+var DA={"labels": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "values": [681.98, 3.17, 0.0, 204.54, 900.45, 1508.28, 1699.34]};
+var HR={"labels": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], "values": [309.89, 8998.82, 15206.8, 22740.0, 18569.16, 11617.86, 6166.51, 2916.25, 182.1, 122.64, 0]};
+var TI={"labels": ["Cheddar Bacon Sammie", "Salted Caramel Latte", "Vanilla Bean Latte", "Farmer\u2019s Benny", "Spinach Feta Sammie", "House Brew", "Latte", "Biscuit Cinnamon Roll", "GF Assorted Scones", "Beans", "Classic Waffle", "Tropical Berry Smoothie", "Banana Berry Smoothie", "Chai Tea Latte", "Butter Pecan Latte"], "qty": [1128, 1405, 935, 234, 381, 677, 436, 589, 632, 132, 163, 262, 247, 357, 274], "values": [10446.14, 8783.78, 5771.3, 3205.54, 3074.11, 2611.3, 2576.2, 2499.92, 2488.33, 2323.5, 2298.84, 2171.11, 2029.21, 1989.55, 1978.44]};
+var DF={"labels": ["Drinks", "Food/Retail"], "values": [42309.9, 45618.89]};
+var PM={"labels": ["CARD", "CASH", "EXTERNAL"], "values": [66900.86, 20970.84, 258.16]};
+var LM={"labels": ["2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03"], "production": [3555.23, 14285.22, 16356.28, 17073.99, 20341.35, 16889.21, 19533.86, 19639.53, 17432.84, 20219.54, 20356.74, 19181.11, 15574.75], "retail": [0, 0, 1134.35, 2368.1, 2489.07, 3062.16, 1466.03, 0, 0, 0, 0, 0, 0]};
+var LR={"labels": ["Manager", "Syrup Production", "Baker", "Roaster", "Sales", "Briggsville Barista", "Manager - Shift", "Paid Time Off", "Meetings", "Maintenance"], "values": [64807.41, 49429.35, 44265.57, 25033.27, 17915.33, 9440.98, 8320.47, 6730.23, 1372.16, 1052.87], "hours": [2934.2, 2325.5, 2322.8, 991.4, 931.1, 848.6, 470.0, 304.0, 67.2, 39.1]};
+var RL={"labels": ["2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03"], "revenue": [0, 0, 10838.26, 17455.51, 20633.18, 25068.74, 13703.49, 0, 79.8, 48.53, 0, 0, 101.28], "labor": [3555.23, 14285.22, 17490.63, 19442.09, 22830.42, 19951.37, 20999.89, 19639.53, 17432.84, 20219.54, 20356.74, 19181.11, 15574.75]};
+var WW={"labels": ["Weekend", "Weekday"], "total": [62453.09, 25246.09], "daily_avg": [1601.36, 647.34]};
+var MD={"labels": ["Whole", "Fried", "Oat", "Almond", "Skim", "Decaf", "+1 Shot", "Vanilla", "Half Sweet", "Vanilla Cold Foam"], "values": [3704, 1470, 507, 243, 169, 150, 129, 121, 120, 108]};
+
+Chart.defaults.color='#94a3b8';
+Chart.defaults.borderColor='#334155';
+Chart.defaults.font.family="'Segoe UI',system-ui,sans-serif";
+var gold='#fbbf24',amber='#f59e0b',red='#ef4444',green='#22c55e',blue='#3b82f6',purple='#a855f7',cyan='#06b6d4',rose='#f43f5e',lime='#84cc16',orange='#f97316';
+var palette=[gold,blue,green,rose,purple,cyan,amber,orange,lime,red,'#818cf8','#2dd4bf','#fb923c','#e879f9','#facc15'];
+
+function showPage(id){
+  var pages=document.querySelectorAll('.page');
+  var tabs=document.querySelectorAll('.tab');
+  for(var i=0;i<pages.length;i++){pages[i].classList.remove('active');}
+  for(var i=0;i<tabs.length;i++){tabs[i].classList.remove('active');}
+  document.getElementById(id).classList.add('active');
+  var tabTexts={'overview':'Overview','products':'Products','labor':'Labor','retail':'Retail Window','actions':'Action Plan'};
+  for(var i=0;i<tabs.length;i++){if(tabs[i].textContent===tabTexts[id]){tabs[i].classList.add('active');}}
+}
+
+function fmt(n){return '$'+n.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0});}
+
+// Revenue vs Labor Chart
+new Chart(document.getElementById('revLaborChart'),{
+  type:'bar',
+  data:{labels:RL.labels,datasets:[
+    {label:'Retail Revenue',data:RL.revenue,backgroundColor:green,borderRadius:4},
+    {label:'Total Labor Cost',data:RL.labor,backgroundColor:red+'99',borderRadius:4}
+  ]},
+  options:{responsive:true,plugins:{legend:{position:'top'}},scales:{y:{ticks:{callback:function(v){return fmt(v);}}}}}
+});
+
+// Monthly Revenue
+new Chart(document.getElementById('monthlyRevChart'),{
+  type:'bar',
+  data:{labels:MR.labels,datasets:[{label:'Revenue',data:MR.values,backgroundColor:gold,borderRadius:6}]},
+  options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return fmt(v);}}}}}
+});
+
+// Top Items
+new Chart(document.getElementById('topItemsChart'),{
+  type:'bar',
+  data:{labels:TI.labels,datasets:[{label:'Revenue',data:TI.values,backgroundColor:palette}]},
+  options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{callback:function(v){return fmt(v);}}}}}
+});
+
+// Drink vs Food
+new Chart(document.getElementById('drinkFoodChart'),{
+  type:'doughnut',
+  data:{labels:DF.labels,datasets:[{data:DF.values,backgroundColor:[blue,amber]}]},
+  options:{responsive:true,plugins:{legend:{position:'bottom'}}}
+});
+
+// Modifiers
+new Chart(document.getElementById('modChart'),{
+  type:'bar',
+  data:{labels:MD.labels,datasets:[{label:'Count',data:MD.values,backgroundColor:cyan,borderRadius:4}]},
+  options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}}}
+});
+
+// Payment Methods
+new Chart(document.getElementById('paymentChart'),{
+  type:'doughnut',
+  data:{labels:PM.labels,datasets:[{data:PM.values,backgroundColor:[blue,green,amber]}]},
+  options:{responsive:true,plugins:{legend:{position:'bottom'}}}
+});
+
+// Labor Monthly
+new Chart(document.getElementById('laborMonthlyChart'),{
+  type:'bar',
+  data:{labels:LM.labels,datasets:[
+    {label:'Production',data:LM.production,backgroundColor:amber,borderRadius:4},
+    {label:'Retail',data:LM.retail,backgroundColor:green,borderRadius:4}
+  ]},
+  options:{responsive:true,plugins:{legend:{position:'top'}},scales:{y:{stacked:true,ticks:{callback:function(v){return fmt(v);}}},x:{stacked:true}}}
+});
+
+// Labor Roles
+new Chart(document.getElementById('laborRoleChart'),{
+  type:'bar',
+  data:{labels:LR.labels,datasets:[{label:'Cost',data:LR.values,backgroundColor:palette}]},
+  options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{callback:function(v){return fmt(v);}}}}}
+});
+
+// DOW Revenue
+new Chart(document.getElementById('dowChart'),{
+  type:'bar',
+  data:{labels:DR.labels,datasets:[{label:'Total Revenue',data:DR.values,backgroundColor:DR.labels.map(function(d){return(d==='Saturday'||d==='Sunday')?gold:blue;}),borderRadius:6}]},
+  options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return fmt(v);}}}}}
+});
+
+// DOW Average
+new Chart(document.getElementById('dowAvgChart'),{
+  type:'bar',
+  data:{labels:DA.labels,datasets:[{label:'Avg/Day',data:DA.values,backgroundColor:DA.labels.map(function(d){return(d==='Saturday'||d==='Sunday')?gold:blue;}),borderRadius:6}]},
+  options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return fmt(v);}}}}}
+});
+
+// Hourly
+new Chart(document.getElementById('hourlyChart'),{
+  type:'bar',
+  data:{labels:HR.labels.map(function(h){return h+':00';}),datasets:[{label:'Revenue',data:HR.values,backgroundColor:HR.labels.map(function(h){return(h>=7&&h<=9)?gold:blue;}),borderRadius:4}]},
+  options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return fmt(v);}}}}}
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bella Goose Coffee — Full Business Intelligence Report</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1"></script>
+<style>
+:root{--bg:#0c0e14;--card:#141720;--border:#1e2230;--text:#e0e0e0;--muted:#6b7280;--amber:#f59e0b;--blue:#3b82f6;--green:#10b981;--red:#ef4444;--purple:#8b5cf6;--cyan:#06b6d4;--pink:#ec4899}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+.dash{max-width:1500px;margin:0 auto;padding:20px 24px}
+
+/* Header */
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.header h1{font-size:26px;font-weight:700;color:#fff;letter-spacing:-.5px}
+.header h1 span{color:var(--amber)}
+.subtitle{font-size:13px;color:var(--muted);margin-top:2px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{padding:7px 16px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;font-size:12px;font-weight:600;transition:all .2s;white-space:nowrap}
+.tab.active,.tab:hover{background:var(--amber);color:#000;border-color:var(--amber)}
+
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px}
+.kpi .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.kpi .value{font-size:24px;font-weight:700;color:#fff}
+.kpi .sub{font-size:11px;color:var(--muted);margin-top:3px}
+.kpi.amber .value{color:var(--amber)}
+.kpi.green .value{color:var(--green)}
+.kpi.red .value{color:var(--red)}
+.kpi.blue .value{color:var(--blue)}
+
+/* Charts */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.chart-box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px}
+.chart-box.full{grid-column:1/-1}
+.chart-box.third{grid-column:span 1}
+.chart-grid.three{grid-template-columns:1fr 1fr 1fr}
+.chart-box h3{font-size:13px;font-weight:600;color:#fff;margin-bottom:2px}
+.chart-sub{font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.5}
+.chart-wrap{position:relative;height:280px}
+.chart-wrap.tall{height:360px}
+.chart-wrap.short{height:220px}
+
+/* Section titles */
+.sec{font-size:18px;font-weight:700;color:#fff;margin:28px 0 14px;padding-bottom:6px;border-bottom:2px solid rgba(245,158,11,.2)}
+.sec-sub{font-size:13px;color:var(--muted);margin:-8px 0 16px}
+
+/* Action cards */
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.action{background:linear-gradient(135deg,var(--card),#171b28);border:1px solid var(--border);border-radius:10px;padding:20px;border-left:4px solid var(--amber)}
+.action.cost{border-left-color:var(--green)}
+.action.risk{border-left-color:var(--red)}
+.action.ops{border-left-color:var(--blue)}
+.action h4{font-size:14px;font-weight:600;color:#fff;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.action p{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:8px}
+.action .steps{font-size:12px;color:var(--text);line-height:1.7}
+.action .steps strong{color:var(--amber)}
+.action .impact{display:inline-block;padding:3px 10px;border-radius:5px;font-size:11px;font-weight:700;margin-top:8px}
+.impact.high{background:rgba(16,185,129,.15);color:var(--green)}
+.impact.med{background:rgba(245,158,11,.15);color:var(--amber)}
+.impact.low{background:rgba(59,130,246,.15);color:var(--blue)}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;margin-bottom:6px;text-transform:uppercase}
+.tag.rev{background:rgba(245,158,11,.15);color:var(--amber)}
+.tag.save{background:rgba(16,185,129,.15);color:var(--green)}
+.tag.ops{background:rgba(59,130,246,.15);color:var(--blue)}
+.tag.crit{background:rgba(239,68,68,.15);color:var(--red)}
+
+/* Tables */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto;margin-bottom:20px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:8px 10px;color:var(--muted);font-weight:600;border-bottom:2px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+td{padding:8px 10px;border-bottom:1px solid #1a1d28;color:var(--text)}
+tr:hover td{background:rgba(255,255,255,.02)}
+.bar-cell{display:flex;align-items:center;gap:6px}
+.bar-bg{height:6px;background:var(--border);border-radius:3px;flex:1;max-width:100px}
+.bar-fill{height:100%;border-radius:3px;background:var(--amber)}
+
+.page{display:none}.page.active{display:block}
+footer{text-align:center;padding:20px;color:var(--muted);font-size:11px;border-top:1px solid var(--border);margin-top:28px}
+
+@media(max-width:900px){.chart-grid,.action-grid,.chart-grid.three{grid-template-columns:1fr}.kpi-row{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="dash">
+<header class="header">
+<div>
+<h1><span>&#9749;</span> Bella Goose Coffee — Business Intelligence</h1>
+<div class="subtitle">Full Annual Report &bull; Mar 2025 – Mar 2026 &bull; All times Mountain Time (MT)</div>
+</div>
+<div class="tabs">
+<div class="tab active" onclick="showPage('overview')">Overview</div>
+<div class="tab" onclick="showPage('revenue')">Revenue Deep-Dive</div>
+<div class="tab" onclick="showPage('products')">Products & Menu</div>
+<div class="tab" onclick="showPage('labor')">Labor & Staffing</div>
+<div class="tab" onclick="showPage('costs')">Costs & Fees</div>
+<div class="tab" onclick="showPage('actions')">Action Plan</div>
+</div>
+</header>
+
+<!-- ======================== OVERVIEW ======================== -->
+<div id="overview" class="page active">
+<div class="kpi-row">
+<div class="kpi amber"><div class="label">Annual Revenue</div><div class="value">$2.42M</div><div class="sub">119,786 orders over 12 months</div></div>
+<div class="kpi"><div class="label">Avg Order Value</div><div class="value">$20.21</div><div class="sub">Median $13.88 &bull; Ranges $0–$695</div></div>
+<div class="kpi blue"><div class="label">Peak Month</div><div class="value">$314K</div><div class="sub">August 2025 &bull; 13,285 orders</div></div>
+<div class="kpi red"><div class="label">Low Month</div><div class="value">$133K</div><div class="sub">Mar 2026 &bull; −58% from peak</div></div>
+<div class="kpi green"><div class="label">Total Tips</div><div class="value">$208K</div><div class="sub">55.3% tip rate &bull; Avg $3.72</div></div>
+<div class="kpi"><div class="label">Total Employees</div><div class="value">67</div><div class="sub">37,079 labor hours &bull; $491K cost</div></div>
+</div>
+<div class="chart-grid">
+<div class="chart-box full"><h3>Monthly Revenue vs Labor Cost with AOV Trend</h3><div class="chart-sub">Revenue surged in summer and dropped 52% into winter. Labor costs didn't scale down proportionally — the gap between the bars narrows dangerously in Nov–Mar.</div><div class="chart-wrap tall"><canvas id="c_revLabor"></canvas></div></div>
+<div class="chart-box"><h3>Revenue by Day of Week (MT)</h3><div class="chart-sub">Sat ($503K) and Sun ($511K) generate 42% of revenue with AOV 15-20% higher than midweek</div><div class="chart-wrap"><canvas id="c_dow"></canvas></div></div>
+<div class="chart-box"><h3>Hourly Order Volume (MT)</h3><div class="chart-sub">Peak: 8-9am MT ($415K+ each). The shop is essentially a morning/brunch business — 80% of revenue before 1pm</div><div class="chart-wrap"><canvas id="c_hourly"></canvas></div></div>
+</div>
+</div>
+
+<!-- ======================== REVENUE DEEP-DIVE ======================== -->
+<div id="revenue" class="page">
+<div class="kpi-row">
+<div class="kpi red"><div class="label">Winter Revenue Drop</div><div class="value">−52%</div><div class="sub">$314K (Aug) → $133K (Mar) &bull; $181K/mo gap</div></div>
+<div class="kpi red"><div class="label">AOV Decline</div><div class="value">−25%</div><div class="sub">$23.64 (Aug) → $17.74 (Mar)</div></div>
+<div class="kpi amber"><div class="label">Drink-Only Orders</div><div class="value">46.7%</div><div class="sub">55,966 orders at $14.88 AOV</div></div>
+<div class="kpi green"><div class="label">Drink + Food AOV</div><div class="value">$43.37</div><div class="sub">$28.48 more than drink-only</div></div>
+<div class="kpi"><div class="label">Weekend Premium</div><div class="value">+18%</div><div class="sub">AOV $22 weekend vs $18.50 weekday</div></div>
+<div class="kpi amber"><div class="label">Upsell Opportunity</div><div class="value">$319K</div><div class="sub">If 20% of drink-only added food</div></div>
+</div>
+<div class="chart-grid">
+<div class="chart-box full"><h3>Monthly Order Volume & AOV Trend</h3><div class="chart-sub">Orders dropped from 13.5K/mo to 7.5K/mo, but AOV also dropped 25% — a compounding problem. Both must be addressed.</div><div class="chart-wrap tall"><canvas id="c_ordersAOV"></canvas></div></div>
+<div class="chart-box"><h3>Revenue by Daypart (MT)</h3><div class="chart-sub">Morning (7-10am) is 48% of all item revenue. Afternoons underperform significantly.</div><div class="chart-wrap"><canvas id="c_daypart"></canvas></div></div>
+<div class="chart-box"><h3>Tip Rate & Amount by Hour (MT)</h3><div class="chart-sub">Morning guests tip more ($4.40 avg) and more often (60%). Afternoon tips drop below $2.40.</div><div class="chart-wrap"><canvas id="c_tips"></canvas></div></div>
+</div>
+<div class="sec">Most Common Item Pairings</div>
+<div class="sec-sub">These are your natural combos — the items customers already buy together. Use this data to create bundle deals.</div>
+<div class="table-wrap">
+<table id="pairsTable"><thead><tr><th>Item 1</th><th>Item 2</th><th>Times Ordered Together</th><th>Frequency</th></tr></thead><tbody></tbody></table>
+</div>
+</div>
+
+<!-- ======================== PRODUCTS ======================== -->
+<div id="products" class="page">
+<div class="kpi-row">
+<div class="kpi amber"><div class="label">#1 Product</div><div class="value">Salted Caramel Latte</div><div class="sub">$149K &bull; 23,285 units &bull; In 16% of all orders</div></div>
+<div class="kpi"><div class="label">Retail Revenue</div><div class="value">$134K</div><div class="sub">Beans $70K + Syrup $65K — strong year-round</div></div>
+<div class="kpi blue"><div class="label">Top Modifier</div><div class="value">Oat Milk</div><div class="sub">15,204 orders (2.5x Almond)</div></div>
+<div class="kpi green"><div class="label">Alt Milk Upcharge</div><div class="value">$16K/yr</div><div class="sub">At $0.75 premium on oat + almond</div></div>
+</div>
+<div class="chart-grid">
+<div class="chart-box full"><h3>Top 20 Products by Net Sales</h3><div class="chart-sub">Coffee drinks dominate (Salted Caramel, Vanilla Bean, Latte). Breakfast sandwiches are the food anchor. Retail (Beans, Syrup) holds up even in winter.</div><div class="chart-wrap tall"><canvas id="c_items"></canvas></div></div>
+<div class="chart-box"><h3>Modifier Popularity</h3><div class="chart-sub">Whole milk is 77% of milk choices. Oat (13%) and Almond (5%) are the alt-milk leaders. Extra shot (+1 Shot) ordered 4,161 times.</div><div class="chart-wrap"><canvas id="c_mods"></canvas></div></div>
+<div class="chart-box"><h3>Seasonal Product Shifts</h3><div class="chart-sub">Food items lose 50%+ revenue in winter. Retail (Beans/Syrups) stays strong — a critical stabilizer. "Flannel" appears only in winter.</div><div class="chart-wrap"><canvas id="c_seasonal"></canvas></div></div>
+</div>
+<div class="sec">Full Product Performance</div>
+<div class="table-wrap"><table id="itemTable"><thead><tr><th>Item</th><th>Net Sales</th><th>Units</th><th>Orders</th><th>$/Unit</th><th>Share</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<!-- ======================== LABOR ======================== -->
+<div id="labor" class="page">
+<div class="kpi-row">
+<div class="kpi"><div class="label">Annual Labor Cost</div><div class="value">$491K</div><div class="sub">37,079 hours &bull; 5,885 shifts</div></div>
+<div class="kpi red"><div class="label">Labor % Range</div><div class="value">13.6–27.4%</div><div class="sub">Sunday 13.6% vs Wednesday 27.4%</div></div>
+<div class="kpi amber"><div class="label">Long Shifts (&gt;8hr)</div><div class="value">24.2%</div><div class="sub">1,427 shifts &bull; 903 excess hrs &bull; $16.4K cost</div></div>
+<div class="kpi blue"><div class="label">PTO Cost</div><div class="value">$25.2K</div><div class="sub">1,410 hours of paid time off</div></div>
+<div class="kpi green"><div class="label">Best Rev/Hr</div><div class="value">$94/hr</div><div class="sub">Sunday — lowest labor cost ratio</div></div>
+<div class="kpi red"><div class="label">Worst Rev/Hr</div><div class="value">$49/hr</div><div class="sub">Wednesday — needs scheduling review</div></div>
+</div>
+<div class="chart-grid">
+<div class="chart-box full"><h3>Labor % of Revenue by Month</h3><div class="chart-sub">In summer (Jul/Aug) labor is a healthy 16-17%. By November it's over 25% — nearly 60% worse. The 20% target line shows where you should aim.</div><div class="chart-wrap tall"><canvas id="c_laborPct"></canvas></div></div>
+<div class="chart-box"><h3>Revenue per Labor Hour by Month</h3><div class="chart-sub">A clear seasonal pattern: $76/hr in summer vs $53/hr in winter. Each $1/hr improvement = ~$37K/year.</div><div class="chart-wrap"><canvas id="c_revPerHr"></canvas></div></div>
+<div class="chart-box"><h3>Labor Cost by Day of Week</h3><div class="chart-sub">Weekdays cost nearly as much as weekends ($63-76K) but earn far less. Wednesday is the worst ROI.</div><div class="chart-wrap"><canvas id="c_labDow"></canvas></div></div>
+</div>
+<div class="chart-grid">
+<div class="chart-box"><h3>Labor Cost by Role</h3><div class="chart-sub">Baristas ($97K) + Shift Leaders ($87K) = 37% of labor. 3 management-level roles total $94K.</div><div class="chart-wrap tall"><canvas id="c_roles"></canvas></div></div>
+<div class="chart-box"><h3>Shift Start Times (MT)</h3><div class="chart-sub">Major shift clusters at 5am (1,715 shifts) and 7am (1,124). Afternoon shifts are sparse — matching the revenue pattern.</div><div class="chart-wrap tall"><canvas id="c_shifts"></canvas></div></div>
+</div>
+</div>
+
+<!-- ======================== COSTS & FEES ======================== -->
+<div id="costs" class="page">
+<div class="kpi-row">
+<div class="kpi red"><div class="label">Processing Fees</div><div class="value">$66.4K</div><div class="sub">3.01% effective rate on card payments</div></div>
+<div class="kpi"><div class="label">Card Volume</div><div class="value">$1.96M</div><div class="sub">83,789 card transactions (82.5%)</div></div>
+<div class="kpi amber"><div class="label">Small Order Fee Drag</div><div class="value">5.0%</div><div class="sub">22,896 card orders under $10 &bull; $7.4K in fees</div></div>
+<div class="kpi green"><div class="label">Gift Card Savings</div><div class="value">$0 fees</div><div class="sub">1,252 gift card txns = zero processing cost</div></div>
+<div class="kpi"><div class="label">Total Discounts</div><div class="value">$82.4K</div><div class="sub">6.0% of orders &bull; Avg $11.37 per discounted order</div></div>
+<div class="kpi blue"><div class="label">Cash Payments</div><div class="value">$249K</div><div class="sub">17,698 txns &bull; $0 processing fees</div></div>
+</div>
+<div class="chart-grid">
+<div class="chart-box"><h3>Payment Method Breakdown</h3><div class="chart-sub">Card is 88.5% of dollar volume. Cash is 11.3%. Wallet and External are negligible.</div><div class="chart-wrap"><canvas id="c_payment"></canvas></div></div>
+<div class="chart-box"><h3>Processing Fee Rate by Card Brand</h3><div class="chart-sub">All major cards cost 3.37-3.48%. Gift cards cost $0. Shifting volume to gift cards saves on every transaction.</div><div class="chart-wrap"><canvas id="c_cardFees"></canvas></div></div>
+</div>
+<div class="chart-grid">
+<div class="chart-box"><h3>Monthly Discount Trends</h3><div class="chart-sub">Discount rate ranges 5-7.2% of orders. Average discount per order is $10-16. Total annual discounts: $82.4K.</div><div class="chart-wrap"><canvas id="c_discounts"></canvas></div></div>
+<div class="chart-box"><h3>Monthly Tips Trend</h3><div class="chart-sub">Tips track revenue seasonally — peaking at $27K/mo in summer. Staff income volatility is a retention risk.</div><div class="chart-wrap"><canvas id="c_tipsTrend"></canvas></div></div>
+</div>
+</div>
+
+<!-- ======================== ACTION PLAN ======================== -->
+<div id="actions" class="page">
+
+<div class="sec">&#128200; Revenue Growth Actions</div>
+<div class="sec-sub">Estimated total impact: $200–350K in additional annual revenue</div>
+<div class="action-grid">
+
+<div class="action">
+<span class="tag rev">REVENUE — HIGH IMPACT</span>
+<h4>1. Food Attach Program — "Add a Bite"</h4>
+<p>46.7% of orders are drink-only at $14.88 AOV. When a customer adds food, AOV jumps to $43.37 — a $28.48 increase. This is your single biggest revenue lever.</p>
+<div class="steps">
+<strong>Specific steps:</strong><br>
+• Create POS prompts: "Add a Cheddar Bacon Sammie for $2 off?" when drink-only order is placed<br>
+• Train baristas on the top combos: Salted Caramel + Cheddar Bacon (2,373 natural pairings), Vanilla Bean + Cheddar Sausage (1,266 pairings)<br>
+• Place food displays near the register — visual cues at the point of decision<br>
+• Set a measurable target: move food attach rate from 25.2% to 35% within 90 days<br>
+• Track daily by shift leader — post results in back of house
+</div>
+<div class="impact high">↑ $120–200K/year if attach rate reaches 35%</div>
+</div>
+
+<div class="action">
+<span class="tag rev">REVENUE — HIGH IMPACT</span>
+<h4>2. Weekend Brunch Expansion</h4>
+<p>Sat/Sun = 42% of revenue with 18% higher AOV ($22 vs $18.50). These are your most profitable days and your peak hours are 7-10am MT. There's room to extend the brunch rush.</p>
+<div class="steps">
+<strong>Specific steps:</strong><br>
+• Launch weekend-only premium items: special waffles, seasonal bennys, brunch cocktails (if licensed)<br>
+• Promote a "Weekend Family Deal" bundle — 2 drinks + 2 food items at a slight discount to drive multi-item orders<br>
+• Extend kitchen hours on weekends to capture the 10am-12pm crowd ($530K in "late morning" revenue)<br>
+• Use social media to promote weekend specials every Thursday/Friday<br>
+• Add 1 extra barista + 1 extra line cook on Sat/Sun mornings
+</div>
+<div class="impact high">↑ $30–50K/year</div>
+</div>
+
+<div class="action">
+<span class="tag rev">REVENUE — MEDIUM IMPACT</span>
+<h4>3. Winter Seasonal Menu & Retail Push</h4>
+<p>Revenue drops 52% from summer to winter, but retail (Beans + Syrup) stays strong at $10-13K/month year-round. Winter-specific items like "Flannel" ($10K in just 3 months) show seasonal menu appetite.</p>
+<div class="steps">
+<strong>Specific steps:</strong><br>
+• Develop 3-4 winter-exclusive drinks (peppermint mocha, gingerbread latte, winter chai) launching Oct 1<br>
+• Create holiday gift bundles: Beans + Syrup + Mug for $25-35 — marketed as "Bella Goose at Home"<br>
+• Run a holiday gift card promotion: "Buy $50, get $10 free" to drive January traffic<br>
+• Partner with local businesses for corporate gift orders (bean bags, syrup sets)<br>
+• The Flannel drink did ~$10K in 3 winter months — expand this concept with 2-3 more seasonal offerings
+</div>
+<div class="impact med">↑ $30–50K/year in winter revenue</div>
+</div>
+
+<div class="action">
+<span class="tag rev">REVENUE — QUICK WIN</span>
+<h4>4. Alt-Milk Premium Pricing</h4>
+<p>Oat milk is ordered 15,204 times/year (2.5x almond at 6,160). These are premium-seeking customers who expect to pay more for alternatives.</p>
+<div class="steps">
+<strong>Specific steps:</strong><br>
+• If not already charging: add $0.75 upcharge for oat, almond, and skim milk<br>
+• If already charging: verify the upcharge is at least $0.75 (many shops now charge $1.00+)<br>
+• Add "+1 Shot" upsell prompt — 4,161 customers already add shots voluntarily<br>
+• Consider "Upgrade to Large" prompt at POS for another $0.75-1.00<br>
+• Display "customize your drink" menu board highlighting premium options
+</div>
+<div class="impact med">↑ $16–25K/year</div>
+</div>
+
+<div class="action">
+<span class="tag rev">REVENUE — MEDIUM IMPACT</span>
+<h4>5. Afternoon Revenue Recovery</h4>
+<p>After 12pm MT, revenue drops sharply — the afternoon (2-5pm) generates only $152K all year. This is underutilized capacity with staff already on-site.</p>
+<div class="steps">
+<strong>Specific steps:</strong><br>
+• Launch an afternoon happy hour (2-4pm): discounted drinks or a "cookie + coffee" combo<br>
+• Add grab-and-go cold items: bottled cold brew, pre-made smoothies, packaged snacks<br>
+• Target the afternoon work crowd with a "study session" special and loyalty stamp<br>
+• Promote afternoon retail (beans, syrups) with a "bring Bella Goose home" afternoon display<br>
+• Reduce food prep labor after 1pm but keep full barista coverage
+</div>
+<div class="impact med">↑ $20–30K/year</div>
+</div>
+
+<div class="action">
+<span class="tag rev">REVENUE — QUICK WIN</span>
+<h4>6. Gift Card & Loyalty Program Push</h4>
+<p>Gift cards generated only $12.6K in revenue but have zero processing fees (vs 3.01% on cards). Plus 1,252 transactions already use Square Gift Cards. Every dollar shifted to gift cards saves 3%.</p>
+<div class="steps">
+<strong>Specific steps:</strong><br>
+• Offer "Buy $25 gift card, get $5 bonus" promotion — drives prepaid revenue<br>
+• Sell gift cards prominently at the register with attractive physical cards<br>
+• Promote gift cards for birthdays, holidays, teacher appreciation, corporate gifting<br>
+• If not using Square Loyalty: launch a simple "Buy 10, get 1 free" stamp program<br>
+• Set goal: double gift card volume to $25K → saves $750+ in processing fees alone
+</div>
+<div class="impact low">↑ $10–15K/year + fee savings</div>
+</div>
+</div>
+
+<div class="sec">&#128181; Cost Reduction Actions</div>
+<div class="sec-sub">Estimated total impact: $70–120K in annual cost savings</div>
+<div class="action-grid">
+
+<div class="action cost">
+<span class="tag crit">COST — CRITICAL</span>
+<h4>7. Winter Staffing Optimization</h4>
+<p>Labor cost as % of revenue jumps from 16.4% (July) to 26.4% (December). Revenue dropped $167K from peak to December, but labor only dropped $13K. That's $35-50K in excess winter labor.</p>
+<div class="steps">
+<strong>Specific steps:</strong><br>
+• Create two seasonal scheduling tiers: "Summer" (Jun-Aug) and "Winter" (Nov-Feb)<br>
+• Winter tier: reduce weekly scheduled hours by 20% — go from ~90 hrs/day to ~72 hrs/day<br>
+• Use part-time baristas for flexibility — reduce from 5 to 3-4 per morning shift in winter<br>
+• Cut afternoon shifts first (post-1pm revenue is minimal in winter)<br>
+• Target: bring winter labor below 20% of revenue (from current 25-26%)<br>
+• Potential savings: if Nov-Feb labor matched 20% target = $25-35K saved
+</div>
+<div class="impact high">↓ $25–40K/year saved</div>
+</div>
+
+<div class="action cost">
+<span class="tag save">COST — HIGH IMPACT</span>
+<h4>8. Midweek Schedule Tightening</h4>
+<p>Wednesday has the worst revenue-per-labor-hour ($49/hr) vs Sunday at $94/hr. Tuesday-Thursday labor costs 24-27% of revenue vs weekend 13-15%. Midweek is overstaffed.</p>
+<div class="steps">
+<strong>Specific steps:</strong><br>
+• Audit Tue-Thu schedules: reduce by 1 barista and 1 kitchen staff per day<br>
+• Close kitchen 1 hour earlier on Tue-Wed (lowest food demand days)<br>
+• Cross-train shift leaders to cover kitchen during slow midweek periods<br>
+• Set midweek labor target: $60/hr revenue per labor hour (from current $49-54)<br>
+• Monitor the dashboard weekly — if revenue/hr drops below $55, cut a shift that day
+</div>
+<div class="impact high">↓ $15–25K/year saved</div>
+</div>
+
+<div class="action cost">
+<span class="tag save">COST — MEDIUM IMPACT</span>
+<h4>9. Overtime & Long Shift Controls</h4>
+<p>24.2% of shifts exceed 8 hours — that's 1,427 shifts with 903 excess hours costing $16.4K. Managers average the longest shifts (250+ excess hours).</p>
+<div class="steps">
+<strong>Specific steps:</strong><br>
+• Set 8-hour shift caps in Square Labor for baristas and shift leaders<br>
+• Require manager approval for any shift extension beyond 8 hours<br>
+• Review Manager role: 145 shifts with 250+ excess hours — are managers staying because they have to, or because there's no handoff plan?<br>
+• Create staggered shift schedules so there's always overlap for handoff<br>
+• Track overtime weekly and share with team — awareness alone reduces it
+</div>
+<div class="impact med">↓ $10–16K/year saved</div>
+</div>
+
+<div class="action cost">
+<span class="tag ops">COST — OPERATIONAL</span>
+<h4>10. Processing Fee Reduction Strategy</h4>
+<p>$66.4K/year in fees at 3.01%. Small orders under $10 pay an effective 5.0% rate ($7.4K in fees on $148K volume). Cash has zero fees.</p>
+<div class="steps">
+<strong>Specific steps:</strong><br>
+• Incentivize cash for small orders: "Pay cash on orders under $10, save 5%" sign at register<br>
+• Promote gift card preloading — zero processing fees per transaction<br>
+• Negotiate with Square: at $2M+ annual volume, request a volume discount or custom rate<br>
+• Evaluate competitor processors (Toast, Clover) for rate comparison<br>
+• Consider a small-order minimum for card payments ($3-5 minimum)<br>
+• Even a 0.25% rate reduction = $4,900/year in savings
+</div>
+<div class="impact med">↓ $5–10K/year saved</div>
+</div>
+
+<div class="action cost">
+<span class="tag ops">COST — OPERATIONAL</span>
+<h4>11. Discount Audit & Controls</h4>
+<p>$82.4K in annual discounts across 7,242 orders. Average discount is $11.37 per order. Gift Cards, A La Carte, and Salted Caramel Latte are the most-discounted items. Who is applying these and why?</p>
+<div class="steps">
+<strong>Specific steps:</strong><br>
+• Pull a report by employee of who applies the most discounts — look for outliers<br>
+• Set discount approval tiers: baristas can apply up to $5, shift leaders up to $15, managers unlimited<br>
+• Require a reason code for every discount (comp, loyalty reward, complaint, employee meal)<br>
+• Review the "A La Carte Options" discounting ($4.4K) — is this a system configuration issue?<br>
+• Target: reduce total discounts by 25% = $20K saved without impacting customer experience
+</div>
+<div class="impact med">↓ $15–20K/year saved</div>
+</div>
+
+<div class="action cost">
+<span class="tag save">COST — QUICK WIN</span>
+<h4>12. Meeting & Training Cost Review</h4>
+<p>182 meeting shifts ($6.4K) and 89 training shifts ($5.8K) at full pay. 39 employees had meeting shifts — that's a lot of paid meeting time.</p>
+<div class="steps">
+<strong>Specific steps:</strong><br>
+• Audit meeting frequency and duration — are 182 paid meeting shifts necessary?<br>
+• Move recurring meetings to shift overlap times so they don't require extra clock-in<br>
+• Consolidate training sessions — 30 employees trained across 89 shifts could be more efficient<br>
+• Use pre-shift huddles (5-10 min) instead of separate meeting shifts where possible<br>
+• Target: reduce meeting hours by 50% = $3.2K saved
+</div>
+<div class="impact low">↓ $3–6K/year saved</div>
+</div>
+</div>
+
+<div class="sec">&#128202; Impact Summary</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Action</th><th>Category</th><th>Est. Annual Impact</th><th>Effort</th><th>Timeline</th><th>Priority</th></tr></thead>
+<tbody>
+<tr><td>Food attach program</td><td>Revenue</td><td style="color:var(--green)">+$120–200K</td><td>Medium</td><td>2-4 weeks</td><td style="color:var(--amber);font-weight:700">P0</td></tr>
+<tr><td>Winter staffing optimization</td><td>Cost</td><td style="color:var(--green)">+$25–40K</td><td>Medium</td><td>By Oct 2026</td><td style="color:var(--amber);font-weight:700">P0</td></tr>
+<tr><td>Weekend brunch expansion</td><td>Revenue</td><td style="color:var(--green)">+$30–50K</td><td>Medium</td><td>4-6 weeks</td><td style="font-weight:600">P1</td></tr>
+<tr><td>Winter seasonal menu</td><td>Revenue</td><td style="color:var(--green)">+$30–50K</td><td>Medium</td><td>By Oct 2026</td><td style="font-weight:600">P1</td></tr>
+<tr><td>Midweek schedule tightening</td><td>Cost</td><td style="color:var(--green)">+$15–25K</td><td>Low</td><td>Immediate</td><td style="font-weight:600">P1</td></tr>
+<tr><td>Afternoon revenue recovery</td><td>Revenue</td><td style="color:var(--green)">+$20–30K</td><td>Medium</td><td>4-6 weeks</td><td style="font-weight:600">P1</td></tr>
+<tr><td>Alt-milk premium pricing</td><td>Revenue</td><td style="color:var(--green)">+$16–25K</td><td>Low</td><td>Immediate</td><td style="font-weight:600">P1</td></tr>
+<tr><td>Discount audit & controls</td><td>Cost</td><td style="color:var(--green)">+$15–20K</td><td>Low</td><td>1-2 weeks</td><td style="font-weight:600">P1</td></tr>
+<tr><td>Overtime shift controls</td><td>Cost</td><td style="color:var(--green)">+$10–16K</td><td>Low</td><td>Immediate</td><td>P2</td></tr>
+<tr><td>Gift card & loyalty push</td><td>Revenue</td><td style="color:var(--green)">+$10–15K</td><td>Low</td><td>2-4 weeks</td><td>P2</td></tr>
+<tr><td>Processing fee reduction</td><td>Cost</td><td style="color:var(--green)">+$5–10K</td><td>Low</td><td>30 days</td><td>P2</td></tr>
+<tr><td>Meeting/training review</td><td>Cost</td><td style="color:var(--green)">+$3–6K</td><td>Low</td><td>Immediate</td><td>P2</td></tr>
+<tr style="font-weight:700;border-top:3px solid var(--amber)"><td>TOTAL ESTIMATED IMPACT</td><td></td><td style="color:var(--amber);font-size:14px">+$299–487K/year</td><td></td><td></td><td></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<footer>All times in Mountain Time (MT) &bull; Data: Mar 24, 2025 – Mar 24, 2026 &bull; Source: Square POS &bull; 119,786 orders &bull; 101,532 payments &bull; 5,894 shifts &bull; 67 employees</footer>
+</div>
+
+<script>
+const MR = [{"month": "2025-03", "revenue": 51374.68, "orders": 2348, "avg_order": 21.88, "tips": 4505.28, "discounts": 2663.36}, {"month": "2025-04", "revenue": 158638.28, "orders": 7794, "avg_order": 20.35, "tips": 14623.21, "discounts": 6189.12}, {"month": "2025-05", "revenue": 201683.01, "orders": 10143, "avg_order": 19.88, "tips": 17243.66, "discounts": 6463.78}, {"month": "2025-06", "revenue": 261019.79, "orders": 11781, "avg_order": 22.16, "tips": 22920.09, "discounts": 6828.94}, {"month": "2025-07", "revenue": 313648.01, "orders": 13590, "avg_order": 23.08, "tips": 27180.38, "discounts": 7452.78}, {"month": "2025-08", "revenue": 314097.25, "orders": 13280, "avg_order": 23.65, "tips": 27415.42, "discounts": 9414.53}, {"month": "2025-09", "revenue": 190041.2, "orders": 10219, "avg_order": 18.6, "tips": 16537.68, "discounts": 8298.71}, {"month": "2025-10", "revenue": 198843.87, "orders": 10403, "avg_order": 19.11, "tips": 17906.84, "discounts": 6138.63}, {"month": "2025-11", "revenue": 154540.06, "orders": 8332, "avg_order": 18.55, "tips": 12684.87, "discounts": 6586.04}, {"month": "2025-12", "revenue": 147126.87, "orders": 7770, "avg_order": 18.94, "tips": 11634.21, "discounts": 6535.9}, {"month": "2026-01", "revenue": 152656.94, "orders": 8487, "avg_order": 17.99, "tips": 12450.57, "discounts": 6328.55}, {"month": "2026-02", "revenue": 143791.76, "orders": 8161, "avg_order": 17.62, "tips": 12070.61, "discounts": 4635.41}, {"month": "2026-03", "revenue": 132896.99, "orders": 7478, "avg_order": 17.77, "tips": 10971.95, "discounts": 4822.61}];
+const ML = [{"month": "2025-03", "hours": 702.8, "cost": 9395.9}, {"month": "2025-04", "hours": 2797.63, "cost": 37471.89}, {"month": "2025-05", "hours": 3049.47, "cost": 40046.97}, {"month": "2025-06", "hours": 3722.23, "cost": 46361.12}, {"month": "2025-07", "hours": 4137.75, "cost": 51344.28}, {"month": "2025-08", "hours": 4118.45, "cost": 52420.49}, {"month": "2025-09", "hours": 3015.03, "cost": 40011.23}, {"month": "2025-10", "hours": 2933.63, "cost": 39829.56}, {"month": "2025-11", "hours": 2851.62, "cost": 39418.46}, {"month": "2025-12", "hours": 2757.52, "cost": 38869.59}, {"month": "2026-01", "hours": 2616.85, "cost": 35698.21}, {"month": "2026-02", "hours": 2319.92, "cost": 31803.55}, {"month": "2026-03", "hours": 2055.7, "cost": 28106.18}];
+const TI = [{"item_name": "Salted Caramel Latte", "net_sales": 149430.0, "qty": 23285, "orders": 19646}, {"item_name": "Cheddar Bacon Sammie", "net_sales": 107650.08, "qty": 11381, "orders": 9659}, {"item_name": "Avocado Toast", "net_sales": 98310.8, "qty": 7185, "orders": 6433}, {"item_name": "Vanilla Bean Latte", "net_sales": 92637.3, "qty": 14813, "orders": 12909}, {"item_name": "Cheddar Sausage Sammie", "net_sales": 86122.2, "qty": 9066, "orders": 7799}, {"item_name": "Latte", "net_sales": 79292.96, "qty": 13811, "orders": 11723}, {"item_name": "Beans", "net_sales": 69653.2, "qty": 4073, "orders": 3067}, {"item_name": "Farmer's Benny", "net_sales": 69326.88, "qty": 4915, "orders": 4392}, {"item_name": "Retail Syrup", "net_sales": 64664.09, "qty": 5899, "orders": 4075}, {"item_name": "Chocolate Covered Strawberry Waffle", "net_sales": 62107.55, "qty": 4467, "orders": 3879}, {"item_name": "Classic Waffle", "net_sales": 60259.44, "qty": 4031, "orders": 3596}, {"item_name": "Build Your Own Waffle", "net_sales": 58160.37, "qty": 4136, "orders": 3368}, {"item_name": "BST Combo", "net_sales": 51547.96, "qty": 3321, "orders": 3041}, {"item_name": "Butter Pecan Latte", "net_sales": 46212.06, "qty": 6316, "orders": 5923}, {"item_name": "A La Carte Options", "net_sales": 45244.18, "qty": 11091, "orders": 6168}, {"item_name": "Spinach Feta Sammie", "net_sales": 40907.81, "qty": 4824, "orders": 4446}, {"item_name": "Honey Cinnamon Latte", "net_sales": 38420.08, "qty": 6112, "orders": 5708}, {"item_name": "House Brew", "net_sales": 36703.01, "qty": 9353, "orders": 7994}, {"item_name": "Banana Berry Smoothie", "net_sales": 35543.04, "qty": 4315, "orders": 3969}, {"item_name": "Tropical Berry Smoothie", "net_sales": 33630.92, "qty": 4083, "orders": 3705}];
+const HR = [{"hour": 0, "revenue": 38.48, "orders": 43, "avg_order": 0.89}, {"hour": 1, "revenue": 0.0, "orders": 18, "avg_order": 0.0}, {"hour": 2, "revenue": 995.89, "orders": 37, "avg_order": 26.92}, {"hour": 3, "revenue": 17.38, "orders": 18, "avg_order": 0.97}, {"hour": 4, "revenue": 215.64, "orders": 83, "avg_order": 2.6}, {"hour": 5, "revenue": 5741.98, "orders": 771, "avg_order": 7.45}, {"hour": 6, "revenue": 201044.08, "orders": 11612, "avg_order": 17.31}, {"hour": 7, "revenue": 341805.82, "orders": 14942, "avg_order": 22.88}, {"hour": 8, "revenue": 415949.95, "orders": 16839, "avg_order": 24.7}, {"hour": 9, "revenue": 413229.6, "orders": 16562, "avg_order": 24.95}, {"hour": 10, "revenue": 344123.59, "orders": 14536, "avg_order": 23.67}, {"hour": 11, "revenue": 235324.9, "orders": 11527, "avg_order": 20.42}, {"hour": 12, "revenue": 169623.45, "orders": 9819, "avg_order": 17.28}, {"hour": 13, "revenue": 125233.21, "orders": 8874, "avg_order": 14.11}, {"hour": 14, "revenue": 95833.27, "orders": 6856, "avg_order": 13.98}, {"hour": 15, "revenue": 66090.85, "orders": 5100, "avg_order": 12.96}, {"hour": 16, "revenue": 3090.13, "orders": 496, "avg_order": 6.23}, {"hour": 17, "revenue": 448.83, "orders": 250, "avg_order": 1.8}, {"hour": 18, "revenue": 279.99, "orders": 264, "avg_order": 1.06}, {"hour": 19, "revenue": 258.68, "orders": 296, "avg_order": 0.87}, {"hour": 20, "revenue": 351.24, "orders": 282, "avg_order": 1.25}, {"hour": 21, "revenue": 449.11, "orders": 262, "avg_order": 1.71}, {"hour": 22, "revenue": 197.44, "orders": 171, "avg_order": 1.15}, {"hour": 23, "revenue": 15.2, "orders": 128, "avg_order": 0.12}];
+const DW = [{"dow_num": 0, "dow": "Monday", "revenue": 305604.03, "orders": 15486, "avg_order": 19.73, "tips": 25551.68}, {"dow_num": 1, "dow": "Tuesday", "revenue": 259469.34, "orders": 13666, "avg_order": 18.99, "tips": 21602.15}, {"dow_num": 2, "dow": "Wednesday", "revenue": 249563.49, "orders": 13577, "avg_order": 18.38, "tips": 21145.41}, {"dow_num": 3, "dow": "Thursday", "revenue": 253453.65, "orders": 13891, "avg_order": 18.25, "tips": 22265.7}, {"dow_num": 4, "dow": "Friday", "revenue": 338248.14, "orders": 17307, "avg_order": 19.54, "tips": 28904.09}, {"dow_num": 5, "dow": "Saturday", "revenue": 502803.6, "orders": 23130, "avg_order": 21.74, "tips": 44743.74}, {"dow_num": 6, "dow": "Sunday", "revenue": 511216.46, "orders": 22729, "avg_order": 22.49, "tips": 43932.0}];
+const LD = [{"dow_num": 0, "dow": "Monday", "cost": 76231.77, "hours": 5550.6}, {"dow_num": 1, "dow": "Tuesday", "cost": 63486.75, "hours": 4805.7}, {"dow_num": 2, "dow": "Wednesday", "cost": 68343.14, "hours": 5063.57}, {"dow_num": 3, "dow": "Thursday", "cost": 67015.51, "hours": 4851.27}, {"dow_num": 4, "dow": "Friday", "cost": 72066.38, "hours": 5344.52}, {"dow_num": 5, "dow": "Saturday", "cost": 74201.26, "hours": 6024.33}, {"dow_num": 6, "dow": "Sunday", "cost": 69432.62, "hours": 5438.62}];
+const RL = [{"job_title": "Barista", "hours": 12005.23, "cost": 96668.63, "employees": 22}, {"job_title": "Shift Leader", "hours": 8092.23, "cost": 86887.33, "employees": 11}, {"job_title": "Line Cook", "hours": 4035.88, "cost": 66749.75, "employees": 19}, {"job_title": "Manager", "hours": 1938.12, "cost": 54324.63, "employees": 2}, {"job_title": "Marketing Director", "hours": 1846.8, "cost": 39649.27, "employees": 1}, {"job_title": "Dishwasher", "hours": 2114.53, "cost": 27551.74, "employees": 21}, {"job_title": "Kitchen Coordinator - Line", "hours": 1152.78, "cost": 25594.88, "employees": 1}, {"job_title": "Paid Time Off", "hours": 1409.5, "cost": 25186.94, "employees": 16}, {"job_title": "Kitchen Coordinator - Prep", "hours": 595.65, "cost": 13193.35, "employees": 1}, {"job_title": "Prep Cook", "hours": 788.83, "cost": 12084.67, "employees": 14}, {"job_title": "Purchasing Manager", "hours": 531.93, "cost": 10359.82, "employees": 3}, {"job_title": "Customer Care Team", "hours": 992.48, "cost": 6866.02, "employees": 6}];
+const MD = [{"modifier": "Whole", "count": 83892}, {"modifier": "Fried", "count": 24870}, {"modifier": "Oat", "count": 14543}, {"modifier": "Almond", "count": 5915}, {"modifier": "+1 Shot", "count": 4161}, {"modifier": "Half Sweet", "count": 3714}, {"modifier": "+ Whip", "count": 3472}, {"modifier": "Skim", "count": 3471}, {"modifier": "Chips", "count": 3452}, {"modifier": "Decaf", "count": 3298}, {"modifier": "Caramel", "count": 3188}, {"modifier": "Vanilla", "count": 3120}, {"modifier": "No Whip", "count": 2767}, {"modifier": "Mug", "count": 2758}, {"modifier": "Strawberries", "count": 2537}];
+const PM = [{"source_type": "CARD", "count": 83789, "amount": 1956659.36, "fees": 66416.33}, {"source_type": "CASH", "count": 17698, "amount": 249021.13, "fees": 0.0}, {"source_type": "WALLET", "count": 27, "amount": 898.94, "fees": 25.94}, {"source_type": "EXTERNAL", "count": 18, "amount": 511.66, "fees": 0.0}];
+const CB = [{"card_brand": "VISA", "count": 50610, "amount": 1203109.15, "fees": 41025.55}, {"card_brand": "MASTERCARD", "count": 24064, "amount": 541597.21, "fees": 18737.24}, {"card_brand": "AMERICAN_EXPRESS", "count": 4083, "amount": 108404.08, "fees": 3658.57}, {"card_brand": "DISCOVER", "count": 3778, "amount": 85939.15, "fees": 2992.28}, {"card_brand": "SQUARE_GIFT_CARD", "count": 1252, "amount": 17518.97, "fees": 0.0}, {"card_brand": "DISCOVER_DINERS", "count": 2, "amount": 90.8, "fees": 2.69}];
+const TP = [{"item1": "Cheddar Bacon Sammie", "item2": "Salted Caramel Latte", "count": 2373}, {"item1": "Salted Caramel Latte", "item2": "Vanilla Bean Latte", "count": 1894}, {"item1": "Cheddar Sausage Sammie", "item2": "Salted Caramel Latte", "count": 1798}, {"item1": "Cheddar Bacon Sammie", "item2": "Cheddar Sausage Sammie", "count": 1773}, {"item1": "Cheddar Bacon Sammie", "item2": "Vanilla Bean Latte", "count": 1515}, {"item1": "Cheddar Sausage Sammie", "item2": "Vanilla Bean Latte", "count": 1266}, {"item1": "Butter Pecan Latte", "item2": "Salted Caramel Latte", "count": 1207}, {"item1": "Avocado Toast", "item2": "Salted Caramel Latte", "count": 1170}, {"item1": "A La Carte Options", "item2": "Avocado Toast", "count": 1122}, {"item1": "Cheddar Bacon Sammie", "item2": "House Brew", "count": 1118}, {"item1": "Biscuit Cinnamon Roll", "item2": "Salted Caramel Latte", "count": 1090}, {"item1": "A La Carte Options", "item2": "Cheddar Bacon Sammie", "count": 1058}];
+const DP = [{"daypart": "Afternoon (2-5pm)", "net_sales": 152324.79, "items": 22859, "orders": 10969}, {"daypart": "Early (<7am)", "net_sales": 189242.26, "items": 27531, "orders": 9869}, {"daypart": "Evening (5pm+)", "net_sales": 1807.1, "items": 297, "orders": 97}, {"daypart": "Late Morning (10-12)", "net_sales": 530386.07, "items": 64794, "orders": 22935}, {"daypart": "Lunch (12-2pm)", "net_sales": 271231.63, "items": 37165, "orders": 16796}, {"daypart": "Morning (7-10am)", "net_sales": 1064219.59, "items": 134065, "orders": 40704}];
+
+// Shift start data (hardcoded from analysis)
+const SHIFTS = [
+  {hour:1,count:1},{hour:2,count:2},{hour:3,count:5},{hour:4,count:399},{hour:5,count:1715},
+  {hour:6,count:519},{hour:7,count:1124},{hour:8,count:521},{hour:9,count:48},{hour:10,count:257},
+  {hour:11,count:565},{hour:12,count:114},{hour:13,count:130},{hour:14,count:98},{hour:15,count:75},
+  {hour:16,count:131},{hour:17,count:92},{hour:18,count:32},{hour:19,count:30},{hour:20,count:21},
+  {hour:21,count:4},{hour:22,count:2}
+];
+
+// Tip data by hour
+const TIPS_HR = [
+  {hour:5,rate:50,avg:3.52},{hour:6,rate:55,avg:3.47},{hour:7,rate:59,avg:4.24},{hour:8,rate:60,avg:4.41},
+  {hour:9,rate:58,avg:4.43},{hour:10,rate:57,avg:4.04},{hour:11,rate:53,avg:3.60},{hour:12,rate:51,avg:3.02},
+  {hour:13,rate:51,avg:2.42},{hour:14,rate:52,avg:2.37},{hour:15,rate:48,avg:2.24},{hour:16,rate:15,avg:3.11}
+];
+
+Chart.defaults.color='#6b7280';Chart.defaults.borderColor='#1e223022';
+Chart.defaults.font.family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif";
+const A='#f59e0b',B='#3b82f6',G='#10b981',R='#ef4444',P='#8b5cf6',C='#06b6d4',PK='#ec4899';
+const CL=[A,B,G,R,P,C,PK,'#84cc16','#f97316','#6366f1','#14b8a6','#e11d48','#a855f7','#eab308','#0ea5e9','#22d3ee','#d946ef','#4ade80','#fb923c','#818cf8'];
+function fmt(n){return'$'+n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0})}
+function fK(n){return n>=1000?'$'+(n/1000).toFixed(0)+'K':fmt(n)}
+
+let CI={};
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  setTimeout(init,80);
+}
+
+function init(){
+  const LM={};ML.forEach(r=>{LM[r.month]=r});
+
+  // Overview charts
+  mk('c_revLabor','bar',{
+    labels:MR.map(r=>r.month),
+    datasets:[
+      {label:'Revenue',data:MR.map(r=>r.revenue),backgroundColor:A+'cc',borderRadius:4,order:2},
+      {label:'Labor Cost',data:MR.map(r=>(LM[r.month]||{}).cost||0),backgroundColor:R+'88',borderRadius:4,order:2},
+      {label:'AOV',data:MR.map(r=>r.avg_order),type:'line',borderColor:C,backgroundColor:'transparent',yAxisID:'y1',pointRadius:4,pointBackgroundColor:C,borderWidth:2,order:1}
+    ]
+  },{scales:{y:{beginAtZero:true,ticks:{callback:v=>fK(v)}},y1:{position:'right',beginAtZero:true,grid:{display:false},ticks:{callback:v=>'$'+v}}}});
+
+  mk('c_dow','bar',{
+    labels:DW.map(r=>r.dow.slice(0,3)),
+    datasets:[{label:'Revenue',data:DW.map(r=>r.revenue),backgroundColor:DW.map(r=>r.dow_num>=5?A:B+'88'),borderRadius:4}]
+  },{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fK(v)}}}});
+
+  mk('c_hourly','line',{
+    labels:HR.filter(r=>r.hour>=5&&r.hour<=16).map(r=>r.hour+':00'),
+    datasets:[{label:'Orders',data:HR.filter(r=>r.hour>=5&&r.hour<=16).map(r=>r.orders),borderColor:A,backgroundColor:A+'22',fill:true,tension:.3,pointRadius:3}]
+  },{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}});
+
+  // Revenue deep dive
+  mk('c_ordersAOV','bar',{
+    labels:MR.map(r=>r.month),
+    datasets:[
+      {label:'Orders',data:MR.map(r=>r.orders),backgroundColor:B+'88',borderRadius:4,order:2},
+      {label:'AOV',data:MR.map(r=>r.avg_order),type:'line',borderColor:A,backgroundColor:'transparent',yAxisID:'y1',pointRadius:5,pointBackgroundColor:A,borderWidth:2.5,order:1}
+    ]
+  },{scales:{y:{beginAtZero:true},y1:{position:'right',grid:{display:false},ticks:{callback:v=>'$'+v}}}});
+
+  const dpOrder=['Early (<7am)','Morning (7-10am)','Late Morning (10-12)','Lunch (12-2pm)','Afternoon (2-5pm)','Evening (5pm+)'];
+  const dpSorted=dpOrder.map(d=>DP.find(r=>r.daypart===d)||{daypart:d,net_sales:0});
+  mk('c_daypart','bar',{
+    labels:dpSorted.map(r=>r.daypart),
+    datasets:[{label:'Net Sales',data:dpSorted.map(r=>r.net_sales),backgroundColor:[P,A,G,B,C,'#6b7280'],borderRadius:4}]
+  },{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>fK(v)}}}});
+
+  mk('c_tips','bar',{
+    labels:TIPS_HR.map(r=>r.hour+':00'),
+    datasets:[
+      {label:'Avg Tip $',data:TIPS_HR.map(r=>r.avg),backgroundColor:G+'88',borderRadius:4},
+      {label:'Tip Rate %',data:TIPS_HR.map(r=>r.rate),type:'line',borderColor:A,yAxisID:'y1',pointRadius:4,pointBackgroundColor:A,borderWidth:2}
+    ]
+  },{scales:{y:{beginAtZero:true,ticks:{callback:v=>'$'+v}},y1:{position:'right',grid:{display:false},min:0,max:100,ticks:{callback:v=>v+'%'}}}});
+
+  // Pairs table
+  const pt=document.querySelector('#pairsTable tbody');
+  if(pt&&!pt.children.length){
+    const mx=Math.max(...TP.map(r=>r.count));
+    TP.forEach(r=>{
+      const pct=(r.count/mx*100).toFixed(0);
+      pt.innerHTML+='<tr><td style="font-weight:600">'+r.item1+'</td><td style="font-weight:600">'+r.item2+'</td><td>'+r.count.toLocaleString()+'</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:'+pct+'%"></div></div></div></td></tr>';
+    });
+  }
+
+  // Products
+  mk('c_items','bar',{
+    labels:TI.map(r=>r.item_name),
+    datasets:[{label:'Net Sales',data:TI.map(r=>r.net_sales),backgroundColor:CL.slice(0,20),borderRadius:4}]
+  },{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>fK(v)}}}});
+
+  mk('c_mods','doughnut',{
+    labels:MD.map(r=>r.modifier),
+    datasets:[{data:MD.map(r=>r.count),backgroundColor:CL}]
+  },{plugins:{legend:{position:'right',labels:{font:{size:10},boxWidth:10}}}});
+
+  // Seasonal comparison
+  const summerItems=['Salted Caramel Latte','Cheddar Bacon Sammie','Avocado Toast','Vanilla Bean Latte','Cheddar Sausage Sammie','Choc Strawberry Waffle','Latte','Build Your Own Waffle'];
+  const winterItems=['Salted Caramel Latte','Cheddar Bacon Sammie','Beans','Vanilla Bean Latte','Avocado Toast','Retail Syrup','Cheddar Sausage Sammie','Latte'];
+  const seasonLabels=['Salted Caramel','Bacon Sammie','Beans/Retail','Vanilla Bean','Avocado Toast','Sausage Sammie','Latte','Waffles'];
+  const summerVals=[56008,39716,36984,35273,38760,33526,27599,48520];
+  const winterVals=[28018,19462,34668,17329,17083,14928,14455,18198];
+  mk('c_seasonal','bar',{
+    labels:seasonLabels,
+    datasets:[
+      {label:'Summer (Jun-Aug)',data:summerVals,backgroundColor:A+'cc',borderRadius:4},
+      {label:'Winter (Dec-Feb)',data:winterVals,backgroundColor:B+'88',borderRadius:4}
+    ]
+  },{plugins:{legend:{position:'top'}},scales:{y:{ticks:{callback:v=>fK(v)}}}});
+
+  // Item table
+  const it=document.querySelector('#itemTable tbody');
+  if(it&&!it.children.length){
+    const mx=Math.max(...TI.map(r=>r.net_sales));
+    TI.forEach(r=>{
+      const pct=(r.net_sales/mx*100).toFixed(0);
+      const pu=(r.net_sales/r.qty).toFixed(2);
+      it.innerHTML+='<tr><td style="font-weight:600">'+r.item_name+'</td><td>'+fmt(r.net_sales)+'</td><td>'+r.qty.toLocaleString()+'</td><td>'+r.orders.toLocaleString()+'</td><td>$'+pu+'</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:'+pct+'%"></div></div>'+pct+'%</div></td></tr>';
+    });
+  }
+
+  // Labor
+  const pct=MR.map(r=>{const l=LM[r.month];return l?+((l.cost/r.revenue)*100).toFixed(1):0});
+  mk('c_laborPct','line',{
+    labels:MR.map(r=>r.month),
+    datasets:[
+      {label:'Labor % of Revenue',data:pct,borderColor:R,backgroundColor:R+'22',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:pct.map(v=>v>22?R:v>18?A:G),borderWidth:2.5},
+      {label:'Target (20%)',data:Array(pct.length).fill(20),borderColor:'#4b5563',borderDash:[5,5],borderWidth:1,pointRadius:0}
+    ]
+  },{scales:{y:{min:10,max:30,ticks:{callback:v=>v+'%'}}}});
+
+  const rph=MR.map(r=>{const l=LM[r.month];return l?+(r.revenue/l.hours).toFixed(2):0});
+  mk('c_revPerHr','line',{
+    labels:MR.map(r=>r.month),
+    datasets:[{label:'Revenue/Labor Hour',data:rph,borderColor:A,backgroundColor:A+'22',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:A,borderWidth:2.5}]
+  },{scales:{y:{ticks:{callback:v=>'$'+v}}}});
+
+  // Labor by DOW
+  const LDM={};LD.forEach(r=>{LDM[r.dow]=r});
+  mk('c_labDow','bar',{
+    labels:DW.map(r=>r.dow.slice(0,3)),
+    datasets:[
+      {label:'Revenue',data:DW.map(r=>r.revenue),backgroundColor:A+'cc',borderRadius:4},
+      {label:'Labor Cost',data:DW.map(r=>(LDM[r.dow]||{}).cost||0),backgroundColor:R+'88',borderRadius:4}
+    ]
+  },{scales:{y:{ticks:{callback:v=>fK(v)}}}});
+
+  mk('c_roles','bar',{
+    labels:RL.map(r=>r.job_title),
+    datasets:[{label:'Labor Cost',data:RL.map(r=>r.cost),backgroundColor:CL.slice(0,12),borderRadius:4}]
+  },{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>fK(v)}}}});
+
+  mk('c_shifts','bar',{
+    labels:SHIFTS.filter(r=>r.hour>=3&&r.hour<=20).map(r=>r.hour+':00'),
+    datasets:[{label:'Shift Starts',data:SHIFTS.filter(r=>r.hour>=3&&r.hour<=20).map(r=>r.count),backgroundColor:SHIFTS.filter(r=>r.hour>=3&&r.hour<=20).map(r=>r.hour<=8?A:B+'66'),borderRadius:4}]
+  },{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}});
+
+  // Costs
+  mk('c_payment','doughnut',{
+    labels:PM.map(r=>r.source_type),
+    datasets:[{data:PM.map(r=>r.amount),backgroundColor:[A,G,P,B]}]
+  },{plugins:{legend:{position:'right'}}});
+
+  mk('c_cardFees','bar',{
+    labels:CB.map(r=>r.card_brand),
+    datasets:[
+      {label:'Fee $',data:CB.map(r=>r.fees),backgroundColor:R+'88',borderRadius:4},
+      {label:'Fee %',data:CB.map(r=>r.amount>0?(r.fees/r.amount*100).toFixed(2):0),type:'line',borderColor:A,yAxisID:'y1',pointRadius:5,pointBackgroundColor:A,borderWidth:2}
+    ]
+  },{scales:{y:{ticks:{callback:v=>fK(v)}},y1:{position:'right',grid:{display:false},min:0,max:5,ticks:{callback:v=>v+'%'}}}});
+
+  // Discount monthly
+  const discData=[
+    {m:'2025-03',total:2663,rate:7.2},{m:'2025-04',total:6189,rate:7.2},{m:'2025-05',total:6464,rate:5.9},
+    {m:'2025-06',total:6829,rate:5.9},{m:'2025-07',total:7453,rate:5.8},{m:'2025-08',total:9415,rate:6.0},
+    {m:'2025-09',total:8299,rate:7.1},{m:'2025-10',total:6139,rate:5.0},{m:'2025-11',total:6586,rate:6.5},
+    {m:'2025-12',total:6536,rate:7.0},{m:'2026-01',total:6329,rate:5.7},{m:'2026-02',total:4635,rate:5.5},
+    {m:'2026-03',total:4823,rate:5.2}
+  ];
+  mk('c_discounts','bar',{
+    labels:discData.map(r=>r.m),
+    datasets:[
+      {label:'Discount $',data:discData.map(r=>r.total),backgroundColor:R+'88',borderRadius:4},
+      {label:'Discount Rate %',data:discData.map(r=>r.rate),type:'line',borderColor:A,yAxisID:'y1',pointRadius:4,pointBackgroundColor:A,borderWidth:2}
+    ]
+  },{scales:{y:{ticks:{callback:v=>fK(v)}},y1:{position:'right',grid:{display:false},min:0,max:10,ticks:{callback:v=>v+'%'}}}});
+
+  mk('c_tipsTrend','bar',{
+    labels:MR.map(r=>r.month),
+    datasets:[{label:'Tips',data:MR.map(r=>r.tips),backgroundColor:G+'88',borderRadius:4}]
+  },{scales:{y:{ticks:{callback:v=>fK(v)}}}});
+}
+
+function mk(id,type,data,opts){
+  if(CI[id])return;
+  const el=document.getElementById(id);
+  if(!el||el.offsetParent===null)return;
+  CI[id]=new Chart(el,{type,data,options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:11},boxWidth:12}}},...opts}});
+}
+
+setTimeout(init,100);
+</script>
+</body>
+</html>

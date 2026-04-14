@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bella Goose Coffee &#8212; Cafe on the River &#8212; 3-Year Business Intelligence Report</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0f1a;color:#e2e8f0;min-height:100vh;line-height:1.5}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,#1a1f35 0%,#2a3050 50%,#1a2040 100%);padding:28px 36px;border-bottom:3px solid #d4a843;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;top:-50%;right:-10%;width:300px;height:300px;background:radial-gradient(circle,rgba(212,168,67,0.08) 0%,transparent 70%);border-radius:50%}
+.header h1{font-size:30px;font-weight:700;color:#d4a843;letter-spacing:-0.5px}
+.header .subtitle{color:#8892a8;margin-top:4px;font-size:14px}
+.header .meta{display:flex;gap:24px;margin-top:10px;flex-wrap:wrap}
+.header .meta-item{font-size:12px;color:#6b7590;display:flex;align-items:center;gap:6px}
+.header .meta-item .val{color:#d4a843;font-weight:600}
+
+/* TABS */
+.tabs{display:flex;gap:2px;padding:0 36px;background:#0d1220;border-bottom:1px solid #1e2640;flex-wrap:wrap}
+.tab{padding:12px 18px;cursor:pointer;font-size:13px;font-weight:500;color:#6b7590;background:transparent;border:none;border-bottom:2px solid transparent;transition:all 0.2s}
+.tab:hover{color:#d4a843}
+.tab.active{color:#d4a843;border-bottom-color:#d4a843}
+
+/* PAGES */
+.page{display:none;padding:28px 36px;max-width:1480px;margin:0 auto}
+.page.active{display:block}
+
+/* KPI CARDS */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:24px}
+.kpi{background:linear-gradient(135deg,#141a2e 0%,#1a2040 100%);border-radius:12px;padding:18px 20px;border:1px solid #1e2640;position:relative;overflow:hidden}
+.kpi::after{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:#d4a843;border-radius:3px 0 0 3px}
+.kpi .label{font-size:10px;color:#6b7590;text-transform:uppercase;letter-spacing:0.8px;font-weight:600}
+.kpi .value{font-size:26px;font-weight:700;color:#d4a843;margin-top:4px}
+.kpi .sub{font-size:11px;color:#4a5570;margin-top:4px}
+.kpi .change{font-size:11px;font-weight:600;margin-top:2px}
+.kpi .change.up{color:#34d399}
+.kpi .change.down{color:#f87171}
+.kpi.alert .value{color:#f87171}
+.kpi.alert::after{background:#f87171}
+.kpi.good .value{color:#34d399}
+.kpi.good::after{background:#34d399}
+
+/* CHART GRID */
+.chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-bottom:24px}
+.chart-box{background:#141a2e;border-radius:12px;padding:22px;border:1px solid #1e2640}
+.chart-box h3{font-size:14px;color:#c8cfe0;margin-bottom:14px;font-weight:600}
+.chart-box canvas{max-height:320px}
+.chart-box .insight{font-size:12px;color:#6b7590;margin-top:14px;padding:12px;background:#0d1220;border-radius:8px;border-left:3px solid #d4a843;line-height:1.6}
+.full-width{grid-column:1/-1}
+
+/* HEATMAP */
+.heatmap-container{overflow-x:auto}
+.heatmap{width:100%;border-collapse:collapse;font-size:12px}
+.heatmap th{padding:8px 10px;color:#6b7590;font-weight:600;text-align:center;font-size:11px}
+.heatmap td{padding:8px 10px;text-align:center;border:1px solid #1e2640;font-weight:500;font-size:11px;min-width:55px}
+.heatmap .row-label{text-align:left;font-weight:600;color:#c8cfe0;border:none}
+
+/* DATA TABLE */
+.table-wrap{overflow-x:auto;margin-bottom:24px}
+.data-table{width:100%;border-collapse:collapse;font-size:12px;background:#141a2e;border-radius:12px;overflow:hidden}
+.data-table thead th{padding:10px 12px;text-align:left;border-bottom:2px solid #1e2640;color:#6b7590;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;user-select:none;white-space:nowrap}
+.data-table thead th:hover{color:#d4a843}
+.data-table tbody td{padding:10px 12px;border-bottom:1px solid #1a2035;color:#c8cfe0}
+.data-table tbody tr:hover{background:#1a2040}
+.data-table .num{text-align:right;font-variant-numeric:tabular-nums}
+.sort-arrow{margin-left:4px;font-size:10px}
+
+/* ACTION PLAN */
+.action-section{margin-bottom:28px}
+.action-section h3{font-size:17px;color:#d4a843;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid #1e2640}
+.action{background:#141a2e;border-radius:12px;padding:22px;margin-bottom:14px;border:1px solid #1e2640;border-left:4px solid #d4a843}
+.action.high{border-left-color:#f87171}
+.action.medium{border-left-color:#fbbf24}
+.action.low{border-left-color:#34d399}
+.action h4{font-size:14px;color:#e2e8f0;margin-bottom:8px}
+.action .priority{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-left:8px}
+.action.high .priority{background:rgba(248,113,113,0.15);color:#fca5a5}
+.action.medium .priority{background:rgba(251,191,36,0.15);color:#fcd34d}
+.action.low .priority{background:rgba(52,211,153,0.15);color:#6ee7b7}
+.action .detail{font-size:12.5px;color:#8892a8;line-height:1.7}
+.action .metrics{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap}
+.action .metric{background:#0d1220;padding:8px 14px;border-radius:8px;font-size:11px}
+.action .metric .m-label{color:#6b7590;font-size:10px;text-transform:uppercase}
+.action .metric .m-value{color:#d4a843;font-weight:700;font-size:14px;margin-top:2px}
+
+/* P&L TABLE */
+.pnl-table{width:100%;border-collapse:collapse}
+.pnl-table th,.pnl-table td{padding:10px 16px;text-align:right;font-size:13px}
+.pnl-table th{color:#6b7590;font-weight:600;border-bottom:2px solid #1e2640}
+.pnl-table td{color:#c8cfe0;border-bottom:1px solid #1a2035}
+.pnl-table .row-label{text-align:left;font-weight:600;color:#e2e8f0}
+.pnl-table .subtotal{border-top:2px solid #d4a843;font-weight:700;color:#d4a843}
+.pnl-table .neg{color:#f87171}
+
+/* SECTION HEADERS */
+.section-header{font-size:18px;color:#c8cfe0;margin-bottom:16px;font-weight:600;display:flex;align-items:center;gap:8px}
+.section-header .badge{background:#d4a843;color:#0a0f1a;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase}
+
+/* FOOTER */
+.footer{padding:24px 36px;text-align:center;color:#4a5570;font-size:11px;border-top:1px solid #1e2640;margin-top:40px}
+
+.warn-banner{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);border-radius:12px;padding:16px 20px;margin-bottom:24px;color:#fca5a5;font-size:13px}
+.warn-banner strong{color:#f87171}
+.note{font-size:12px;color:#4a5570;margin-top:10px;font-style:italic}
+
+@media print{
+  body{background:white;color:black}
+  .tabs{display:none}
+  .page{display:block!important}
+  .kpi{border:1px solid #ddd}
+}
+@media(max-width:768px){
+  .chart-grid{grid-template-columns:1fr}
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .tabs{padding:0 16px}
+  .page{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>Bella Goose Coffee &#8212; Cafe on the River</h1>
+<p class="subtitle">3-Year Business Intelligence Report &#8226; Comprehensive POS Data Analysis</p>
+<div class="meta">
+<div class="meta-item">Period: <span class="val">Mar 2023 &#8211; Mar 2026</span></div>
+<div class="meta-item">Orders: <span class="val">264,938</span></div>
+<div class="meta-item">Revenue: <span class="val">$5.51M</span></div>
+<div class="meta-item">Employees: <span class="val">118</span></div>
+<div class="meta-item">Timezone: <span class="val">Mountain</span></div>
+</div>
+</div>
+
+<div class="tabs">
+<div class="tab active" onclick="showPage('executive')">Executive Summary</div>
+<div class="tab" onclick="showPage('growth')">Growth Analysis</div>
+<div class="tab" onclick="showPage('seasonal')">Seasonality</div>
+<div class="tab" onclick="showPage('products')">Product Mix</div>
+<div class="tab" onclick="showPage('customers')">Order Behavior</div>
+<div class="tab" onclick="showPage('labor')">Labor &amp; Staffing</div>
+<div class="tab" onclick="showPage('financials')">Financial Health</div>
+<div class="tab" onclick="showPage('actions')">Action Plan</div>
+</div>
+
+<div id="executive" class="page active">
+<div class="section-header">Executive Summary <span class="badge">3-Year Overview</span></div>
+<div class="kpi-row">
+<div class="kpi good"><div class="label">2025 Revenue</div><div class="value">$2.12M</div><div class="change up">+19.9% vs 2024</div><div class="sub">$1.77M in 2024, $1.22M in 2023</div></div>
+<div class="kpi good"><div class="label">2025 Orders</div><div class="value">98,782</div><div class="change up">+11.9% vs 2024</div><div class="sub">88,275 in 2024</div></div>
+<div class="kpi"><div class="label">2025 Avg Order</div><div class="value">$21.50</div><div class="change up">+7.1% vs 2024</div><div class="sub">$20.07 in 2024</div></div>
+<div class="kpi"><div class="label">3-Year Tips</div><div class="value">$530K</div><div class="sub">55% tip rate, $3.60 avg</div></div>
+<div class="kpi"><div class="label">2025 Labor Cost</div><div class="value">$484K</div><div class="sub">22.8% of revenue</div></div>
+<div class="kpi good"><div class="label">Rev/Labor Hour</div><div class="value">$57.63</div><div class="change up">+15% vs 2023</div><div class="sub">$50.21 in 2023</div></div>
+<div class="kpi"><div class="label">3-Year Discounts</div><div class="value">$224K</div><div class="sub">4.0% of gross sales</div></div>
+</div>
+
+<div class="chart-grid">
+<div class="chart-box full-width"><h3>Monthly Revenue Timeline &#8212; 36 Months</h3><canvas id="c_timeline" height="90"></canvas>
+<div class="insight">Revenue nearly doubled in 3 years. Each successive year outperforms the last across every month. The seasonal pattern (summer peaks, winter troughs) is consistent but the floor keeps rising &#8212; off-season revenue grew from 26% to 37% of total, showing strong local customer growth.</div></div>
+<div class="chart-box"><h3>Year-over-Year Revenue Overlay</h3><canvas id="c_yoy"></canvas></div>
+<div class="chart-box"><h3>Average Order Value Trend</h3><canvas id="c_aov"></canvas></div>
+</div>
+
+<div class="chart-box" style="margin-bottom:24px">
+<h3>Simplified P&amp;L Summary</h3>
+<div class="table-wrap">
+<table class="pnl-table">
+<thead><tr><th class="row-label">Line Item</th><th>2023</th><th>2024</th><th>2025</th><th>3-Year Total</th></tr></thead>
+<tbody>
+<tr><td class="row-label">Gross Sales</td><td class="num">$1,276,174</td><td class="num">$1,847,547</td><td class="num">$2,204,509</td><td class="num">$5,328,230</td></tr>
+<tr><td class="row-label neg">Less: Discounts</td><td class="num neg">($52,120)</td><td class="num neg">($76,163)</td><td class="num neg">($80,947)</td><td class="num neg">($209,230)</td></tr>
+<tr class="subtotal"><td class="row-label">Net Revenue</td><td class="num">$1,224,054</td><td class="num">$1,771,384</td><td class="num">$2,123,562</td><td class="num">$5,119,000</td></tr>
+<tr><td class="row-label neg">Less: Labor</td><td class="num neg">($273,823)</td><td class="num neg">($438,759)</td><td class="num neg">($483,555)</td><td class="num neg">($1,196,137)</td></tr>
+<tr><td class="row-label neg">Less: Processing Fees</td><td class="num neg">($34,396)</td><td class="num neg">($51,826)</td><td class="num neg">($64,805)</td><td class="num neg">($151,027)</td></tr>
+<tr class="subtotal"><td class="row-label">Margin After Labor &amp; Fees</td><td class="num">$915,835</td><td class="num">$1,280,799</td><td class="num">$1,575,202</td><td class="num">$3,771,836</td></tr>
+<tr><td class="row-label" style="color:#34d399">Employee Tips</td><td class="num" style="color:#34d399">$117,996</td><td class="num" style="color:#34d399">$169,351</td><td class="num" style="color:#34d399">$206,513</td><td class="num" style="color:#34d399">$493,860</td></tr>
+
+</tbody></table></div></div>
+</div>
+
+<div id="growth" class="page">
+<div class="section-header">Growth Analysis <span class="badge">Year-over-Year</span></div>
+<div class="kpi-row">
+<div class="kpi good"><div class="label">2023 to 2024 Growth</div><div class="value">+44.7%</div><div class="sub">$1.22M to $1.77M (+$547K)</div></div>
+<div class="kpi good"><div class="label">2024 to 2025 Growth</div><div class="value">+19.9%</div><div class="sub">$1.77M to $2.12M (+$352K)</div></div>
+<div class="kpi good"><div class="label">Best Growth Month</div><div class="value" style="font-size:20px">May 2025</div><div class="sub">+34.2% vs May 2024</div></div>
+<div class="kpi"><div class="label">3-Year CAGR</div><div class="value">31.7%</div><div class="sub">Compounded annual growth</div></div>
+</div>
+<div class="chart-grid">
+<div class="chart-box full-width"><h3>Monthly Growth Rate: 2024 vs Prior Year and 2025 vs Prior Year</h3><canvas id="c_growth_rate"></canvas>
+<div class="insight">2024 growth was explosive (Oct +49%, Dec +33%) as the business expanded. 2025 growth moderated but stayed strong: May (+34%), Aug (+30%), Apr (+29%). The slowest growth month was December 2025 at +4% &#8212; suggesting the holiday market may be approaching saturation.</div></div>
+<div class="chart-box"><h3>Seasonal Revenue Split by Year</h3><canvas id="c_seasonal"></canvas>
+<div class="insight">Off-season revenue share grew from 26% (2023) to 37% (2025). This diversification away from tourist-only income is the most strategically important trend in the data &#8212; it reduces risk and supports year-round employment.</div></div>
+</div>
+</div>
+
+<div id="seasonal" class="page">
+<div class="section-header">Seasonality &amp; Traffic Patterns <span class="badge">2025 Focus</span></div>
+<div class="kpi-row">
+<div class="kpi"><div class="label">Peak Revenue/Day</div><div class="value">$8,566</div><div class="sub">Sat/Sun avg (2025)</div></div>
+<div class="kpi"><div class="label">Weekday Rev/Day</div><div class="value">$4,487</div><div class="sub">Mon-Fri average</div></div>
+<div class="kpi"><div class="label">Weekend Premium</div><div class="value good">+91%</div><div class="sub">Weekends earn nearly 2x weekdays</div></div>
+<div class="kpi"><div class="label">Peak Hour</div><div class="value">8&#8211;9 AM</div><div class="sub">$139K each in peak season (2025)</div></div>
+<div class="kpi"><div class="label">Morning Share</div><div class="value">78%</div><div class="sub">6&#8211;11 AM = 78% of daily revenue</div></div>
+</div>
+<div class="chart-grid">
+<div class="chart-box"><h3>Revenue by Day of Week (2025)</h3><canvas id="c_dow"></canvas></div>
+<div class="chart-box"><h3>Average Revenue per Day by DOW (2025)</h3><canvas id="c_dow_avg"></canvas></div>
+<div class="chart-box full-width"><h3>Hourly Revenue: Peak vs Shoulder vs Off-Season (2025)</h3><canvas id="c_hourly"></canvas>
+<div class="insight">The morning rush (7&#8211;10 AM) dominates across all seasons. Afternoon revenue (12&#8211;3 PM) is remarkably stable between peak and off-season, showing locals sustain the lunch business year-round. The 5&#8211;6 AM pre-open sales suggest early commuter demand worth capturing.</div></div>
+<div class="chart-box full-width"><h3>Revenue Heatmap: Day of Week x Hour (2025)</h3>
+<div class="heatmap-container"><table class="heatmap" id="heatmapTable"></table></div>
+<div class="insight">Saturdays and Sundays 7&#8211;10 AM are the absolute peak cells. Wednesday and Thursday afternoons are the weakest spots &#8212; potential targets for mid-week promotions.</div>
+</div>
+</div>
+</div>
+
+<div id="products" class="page">
+<div class="section-header">Product Mix Analysis <span class="badge">Menu Intelligence</span></div>
+<div class="kpi-row">
+<div class="kpi"><div class="label">#1 Item (3yr)</div><div class="value" style="font-size:17px">Salted Caramel Latte</div><div class="sub">$365K rev, 59K units</div></div>
+<div class="kpi"><div class="label">#1 Food Item</div><div class="value" style="font-size:17px">Egg Sammie</div><div class="sub">$249K rev, 33K units</div></div>
+<div class="kpi"><div class="label">Drink/Food Split</div><div class="value">40%/60%</div><div class="sub">Food outearns drinks &#8212; rare for a cafe</div></div>
+<div class="kpi good"><div class="label">Retail Products</div><div class="value">$319K</div><div class="sub">Beans $175K + Syrup $144K</div></div>
+<div class="kpi alert"><div class="label">Biggest Decline</div><div class="value" style="font-size:17px">Egg Sammie</div><div class="sub">$139K (2024) &#8594; $14K (2025)</div></div>
+</div>
+<div class="chart-grid">
+<div class="chart-box"><h3>Top 15 Items by Revenue (3 Years Combined)</h3><canvas id="c_top_items"></canvas></div>
+<div class="chart-box"><h3>Product Revenue Change: 2024 &#8594; 2025</h3><canvas id="c_product_growth"></canvas>
+<div class="insight">Avocado Toast exploded (+$58K, +177%) &#8212; clearly a menu hit. Retail Syrup (+$17K) and Build Your Own Waffle (+$16K) are strong growers. The Egg Sammie cliff (-$124K) needs investigation: was it a deliberate rebrand to Cheddar Bacon/Sausage variants, or lost revenue?</div></div>
+<div class="chart-box"><h3>Drink vs Food Revenue by Year</h3><canvas id="c_drink_food"></canvas></div>
+<div class="chart-box"><h3>Top 15 Modifiers (Customizations)</h3><canvas id="c_modifiers"></canvas>
+<div class="insight">Oat milk (36.9K instances) and Almond (15K) are massive. +1 Shot (9.8K) at $0.75&#8211;1.00 each is pure margin. If alt-milks are not already upcharged, 52K instances at $0.75 = $39K/yr in untapped revenue.</div></div>
+</div>
+
+<div class="chart-box" style="margin-bottom:24px">
+<h3>Top 25 Menu Items &#8212; Sortable Detail Table</h3>
+<div class="table-wrap"><table class="data-table" id="itemTable"></table></div>
+</div>
+</div>
+
+<div id="customers" class="page">
+<div class="section-header">Order Behavior &amp; Customer Patterns <span class="badge">Basket Analysis</span></div>
+<div class="kpi-row">
+<div class="kpi"><div class="label">Drink-Only Orders</div><div class="value">34.3%</div><div class="sub">90,490 orders, $8.83 avg</div></div>
+<div class="kpi good"><div class="label">Combo Orders</div><div class="value">49.8%</div><div class="sub">131,376 orders, $30.62 avg</div></div>
+<div class="kpi"><div class="label">Food-Only Orders</div><div class="value">15.9%</div><div class="sub">41,924 orders, ~$20 avg</div></div>
+<div class="kpi alert"><div class="label">Food Attach Rate</div><div class="value">56.9%</div><div class="change down">Was 63.4% in 2023</div><div class="sub">6.5-point decline = ~$80&#8211;137K lost</div></div>
+</div>
+<div class="chart-grid">
+<div class="chart-box"><h3>Order Composition (3 Years)</h3><canvas id="c_order_comp"></canvas>
+<div class="insight">Combo orders (drink + food) average $30.62 &#8212; 3.5x a drink-only order. Every 1% shift from drink-only to combo adds ~$29K in annual revenue. This is the most powerful upsell lever in the business.</div></div>
+<div class="chart-box"><h3>Food Attach Rate Trend</h3><canvas id="c_attach"></canvas>
+<div class="insight">The declining food attach rate (63.4% &#8594; 56.9%) is costing real money. Possible drivers: the Egg Sammie being discontinued, speed-of-service pressure during rush hours causing baristas to skip food suggestions, or menu board changes making food less visible.</div></div>
+<div class="chart-box"><h3>Order Value Distribution &#8212; AOV by Composition Type</h3><canvas id="c_aov_comp"></canvas></div>
+<div class="chart-box"><h3>Tip Rate &amp; Average Tip Trend</h3><canvas id="c_tips_trend"></canvas></div>
+</div>
+</div>
+
+<div id="labor" class="page">
+<div class="section-header">Labor &amp; Staffing Intelligence <span class="badge">Workforce Analytics</span></div>
+<div class="kpi-row">
+<div class="kpi"><div class="label">3-Year Labor</div><div class="value">$1.29M</div><div class="sub">103,941 hours across 118 employees</div></div>
+<div class="kpi good"><div class="label">Rev/Labor Hour 2025</div><div class="value">$57.63</div><div class="change up">+$7.42 vs 2023</div><div class="sub">Efficiency improving</div></div>
+<div class="kpi"><div class="label">2025 Labor %</div><div class="value">22.8%</div><div class="sub">Industry target: 25&#8211;30%</div></div>
+<div class="kpi alert"><div class="label">2024 Turnover</div><div class="value">47%</div><div class="sub">30 of 64 employees left</div></div>
+<div class="kpi"><div class="label">Avg Wage Trend</div><div class="value">Rising</div><div class="sub">Wage inflation visible in data</div></div>
+</div>
+<div class="chart-grid">
+<div class="chart-box full-width"><h3>Revenue vs Labor Cost by Month</h3><canvas id="c_rev_labor" height="80"></canvas></div>
+<div class="chart-box"><h3>Labor Cost as % of Revenue</h3><canvas id="c_labor_pct"></canvas>
+<div class="insight">Labor percentage ranges from 18&#8211;19% in peak summer to 29&#8211;31% in off-season. The improving trend (Q4 2023: 30.8% vs Q4 2025: 26.2%) shows you are scaling revenue faster than labor &#8212; excellent efficiency gains.</div></div>
+<div class="chart-box"><h3>Revenue per Labor Hour by Quarter</h3><canvas id="c_rev_per_hour"></canvas></div>
+<div class="chart-box"><h3>Labor Cost by Role (3 Years)</h3><canvas id="c_labor_roles"></canvas></div>
+<div class="chart-box"><h3>Average Hourly Wage Trend</h3><canvas id="c_wage"></canvas></div>
+</div>
+
+<div class="chart-box" style="margin-bottom:24px">
+<h3>Labor Role Breakdown &#8212; Detail Table</h3>
+<div class="table-wrap"><table class="data-table" id="laborTable"></table></div>
+</div>
+</div>
+
+<div id="financials" class="page">
+<div class="section-header">Financial Health &amp; Revenue Quality <span class="badge">Cost Analysis</span></div>
+<div class="kpi-row">
+<div class="kpi"><div class="label">2025 Discounts</div><div class="value">$80.9K</div><div class="sub">3.7% of gross (improved from 4.1%)</div></div>
+<div class="kpi"><div class="label">Processing Fees</div><div class="value">$163K</div><div class="change down">Rate: 2.81% &#8594; 3.05%</div><div class="sub">3-year total</div></div>
+<div class="kpi good"><div class="label">Gift Card Growth</div><div class="value">+118%</div><div class="sub">$7.4K (2023) &#8594; $16.2K (2025)</div></div>
+<div class="kpi"><div class="label">Cash Payment Shift</div><div class="value">24% &#8594; 17%</div><div class="sub">Declining cash, rising card fees</div></div>
+</div>
+<div class="chart-grid">
+<div class="chart-box"><h3>Discount Rate by Quarter (%)</h3><canvas id="c_disc_rate"></canvas></div>
+<div class="chart-box"><h3>Total Discounts by Quarter ($)</h3><canvas id="c_disc_dollar"></canvas></div>
+<div class="chart-box"><h3>Monthly Tip Revenue</h3><canvas id="c_tips_monthly"></canvas></div>
+<div class="chart-box"><h3>Gift Card Revenue by Year</h3><canvas id="c_gift"></canvas></div>
+<div class="chart-box"><h3>Processing Fees: Amount &amp; Rate</h3><canvas id="c_fees"></canvas></div>
+<div class="chart-box"><h3>Payment Method Shift</h3><canvas id="c_pay_shift"></canvas></div>
+</div>
+</div>
+
+<div id="actions" class="page">
+<div class="section-header">Strategic Action Plan <span class="badge">Data-Driven Recommendations</span></div>
+<div class="kpi-row">
+<div class="kpi good"><div class="label">Total Est. Impact</div><div class="value">$180&#8211;340K/yr</div><div class="sub">8&#8211;16% improvement on $2.12M base</div></div>
+<div class="kpi"><div class="label">High Priority</div><div class="value" style="color:#f87171">4 Actions</div><div class="sub">$160&#8211;315K combined impact</div></div>
+<div class="kpi"><div class="label">Medium Priority</div><div class="value" style="color:#fbbf24">4 Actions</div><div class="sub">$70&#8211;145K combined impact</div></div>
+<div class="kpi"><div class="label">Strategic</div><div class="value" style="color:#34d399">2 Actions</div><div class="sub">Long-term value + cost savings</div></div>
+</div>
+
+<div class="action-section">
+<h3>High Priority &#8212; Immediate Revenue Recovery</h3>
+
+<div class="action high">
+<h4>1. Reverse the Declining Food Attach Rate <span class="priority">Critical</span></h4>
+<div class="detail">
+In 2023, 63.4% of drink orders also included food. By 2025 it dropped to 56.9%. On ~150K drink orders per year, each percentage point is roughly 1,500 missed food items at $8&#8211;14 each ($12&#8211;21K per point). The 6.5-point decline represents $78&#8211;137K in annual food revenue that stopped happening. Investigate: Did the Egg Sammie discontinuation cause this? Are baristas skipping food suggestions during rush? Has the menu board layout changed? Implement a "combo prompt" in the POS and train baristas to name-suggest one food item with every drink order.
+</div>
+<div class="metrics">
+<div class="metric"><div class="m-label">2023 Attach</div><div class="m-value">63.4%</div></div>
+<div class="metric"><div class="m-label">2025 Attach</div><div class="m-value" style="color:#f87171">56.9%</div></div>
+<div class="metric"><div class="m-label">Combo AOV</div><div class="m-value">$30.62</div></div>
+<div class="metric"><div class="m-label">Est. Impact</div><div class="m-value">$40&#8211;80K/yr</div></div>
+</div>
+</div>
+
+<div class="action high">
+<h4>2. Tighten Discount Controls &#8212; Maintain the 3.7% Rate as You Scale <span class="priority">High</span></h4>
+<div class="detail">
+Discounts totaled $81K in 2025 on $2.2M gross &#8212; a 3.7% rate, improved from 4.1% in prior years. This is healthy, but at your growth rate the dollar amount will climb fast if the rate creeps back up. Categorize every discount type in Square: employee meals, loyalty, damaged items, manager comps, promotions. Set quarterly budgets by category. The goal is not aggressive cutting but preventing regression &#8212; holding at 3.5% as you grow to $2.5M+ would save $12&#8211;15K vs letting it drift back to 4.1%. Move from blanket percentage-off promotions to targeted offers (e.g., free cookie with $20+ order vs 10% off everything).
+</div>
+<div class="metrics">
+<div class="metric"><div class="m-label">2025 Discounts</div><div class="m-value">$80,947</div></div>
+<div class="metric"><div class="m-label">Current Rate</div><div class="m-value" style="color:#34d399">3.7%</div></div>
+<div class="metric"><div class="m-label">Target Rate</div><div class="m-value" style="color:#34d399">3.5%</div></div>
+<div class="metric"><div class="m-label">Est. Impact</div><div class="m-value">$10&#8211;15K/yr</div></div>
+</div>
+</div>
+
+<div class="action high">
+<h4>3. Diagnose the Egg Sammie Revenue Cliff <span class="priority">High</span></h4>
+<div class="detail">
+The Egg Sammie went from $139K (2024) to $14K (2025) &#8212; a 90% drop, making it the single largest product revenue loss. Similarly, "Smoothie" dropped $47K to $3.6K and "BST &amp; Chips" from $37K to $7K. Were these deliberate menu changes, or accidental revenue losses? The Cheddar Bacon ($116K) and Cheddar Sausage ($92K) variants exist, but their combined growth does not fully cover the Egg Sammie decline. Verify that replacement items captured demand. If not, re-evaluate the menu consolidation.
+</div>
+<div class="metrics">
+<div class="metric"><div class="m-label">Egg Sammie 2024</div><div class="m-value">$139K</div></div>
+<div class="metric"><div class="m-label">Egg Sammie 2025</div><div class="m-value" style="color:#f87171">$14K</div></div>
+<div class="metric"><div class="m-label">Also Declined</div><div class="m-value">Smoothie, BST</div></div>
+<div class="metric"><div class="m-label">Est. Impact</div><div class="m-value">$25&#8211;50K/yr</div></div>
+</div>
+</div>
+</div>
+
+<div class="action-section">
+<h3>Medium Priority &#8212; Revenue Growth &amp; Optimization</h3>
+
+<div class="action medium">
+<h4>4. Double Down on Retail Products (Beans + Syrups) <span class="priority">Medium</span></h4>
+<div class="detail">
+Retail products generated $319K over 3 years (Beans $175K, Syrups $144K) and are growing fast: Retail Syrup +40% in 2025, Holiday Syrup Boxes +140%. These are high-margin items with no additional kitchen labor. Create a dedicated retail display near the register. Bundle a "Tourist Take-Home" pack (1 bag beans + 1 syrup bottle). Push syrup gift boxes year-round, not just holidays. The roastery and syrup production already exist &#8212; this is pure margin expansion.
+</div>
+<div class="metrics">
+<div class="metric"><div class="m-label">3-Year Retail Rev</div><div class="m-value">$319K</div></div>
+<div class="metric"><div class="m-label">Syrup Growth</div><div class="m-value" style="color:#34d399">+40%</div></div>
+<div class="metric"><div class="m-label">Est. Impact</div><div class="m-value">$20&#8211;40K/yr</div></div>
+</div>
+</div>
+
+<div class="action medium">
+<h4>5. Expand the Waffle Program <span class="priority">Medium</span></h4>
+<div class="detail">
+Waffles are a powerhouse: Classic ($177K), Chocolate Covered Strawberry ($160K), Build Your Own ($150K) &#8212; nearly $500K combined over 3 years, with Build Your Own growing +39% and Plain Waffle +63% in 2025. Consider a "Waffle of the Month" special to drive repeat visits from locals. Add a savory waffle option to capture lunch traffic. The waffle station is already staffed &#8212; incremental menu items have near-zero additional labor cost.
+</div>
+<div class="metrics">
+<div class="metric"><div class="m-label">3-Year Waffle Rev</div><div class="m-value">$487K</div></div>
+<div class="metric"><div class="m-label">BYO Growth</div><div class="m-value" style="color:#34d399">+39%</div></div>
+<div class="metric"><div class="m-label">Est. Impact</div><div class="m-value">$15&#8211;30K/yr</div></div>
+</div>
+</div>
+
+<div class="action medium">
+<h4>6. Maximize Weekend Revenue (+92% Premium) <span class="priority">Medium</span></h4>
+<div class="detail">
+Weekends average $8,566/day vs $4,487 on weekdays. Saturday and Sunday alone generated $891K in 2025 (42% of revenue). Optimize for weekends: ensure full staffing (no gaps from call-outs), pre-prep popular items Friday night, consider a weekend-only special menu. If you can increase weekend throughput by just 5% through better prep and staffing, that is $44K/yr. Staff the register with an extra person during 7&#8211;10 AM Saturday/Sunday to reduce line abandonment.
+</div>
+<div class="metrics">
+<div class="metric"><div class="m-label">Weekend Rev/Day</div><div class="m-value">$8,566</div></div>
+<div class="metric"><div class="m-label">Weekday Rev/Day</div><div class="m-value">$4,487</div></div>
+<div class="metric"><div class="m-label">Est. Impact</div><div class="m-value">$20&#8211;45K/yr</div></div>
+</div>
+</div>
+
+<div class="action medium">
+<h4>7. Accelerate Shoulder Season Growth <span class="priority">Medium</span></h4>
+<div class="detail">
+Your best YoY growth was in shoulder months: May (+34%), April (+29%), October (+49% in 2024). Shoulder season already contributes 25% of revenue with available capacity. Run targeted local marketing in April/May and Sep/Oct: loyalty rewards for locals, "first waffle of spring" campaign, fall harvest specials. The shoulder is where you can grow without hitting peak-season capacity constraints.
+</div>
+<div class="metrics">
+<div class="metric"><div class="m-label">May Growth</div><div class="m-value" style="color:#34d399">+34%</div></div>
+<div class="metric"><div class="m-label">Shoulder Share</div><div class="m-value">25%</div></div>
+<div class="metric"><div class="m-label">Est. Impact</div><div class="m-value">$15&#8211;30K/yr</div></div>
+</div>
+</div>
+</div>
+
+<div class="action-section">
+<h3>Strategic &#8212; Long-Term Value</h3>
+
+<div class="action low">
+<h4>8. Address 47% Annual Employee Turnover <span class="priority">Strategic</span></h4>
+<div class="detail">
+In 2024, 30 of 64 employees left. At $1,500&#8211;2,500 in hiring/training cost per replacement, that is $45&#8211;75K in hidden annual cost. Experienced staff are faster and upsell better &#8212; the attach rate decline may partially correlate with newer, less-trained employees. Conduct stay interviews with top performers. Common retention levers: predictable scheduling, tenure-based raises ($0.50/hr at 6 months), shift meal improvements.
+</div>
+<div class="metrics">
+<div class="metric"><div class="m-label">2023 Retained</div><div class="m-value">62%</div></div>
+<div class="metric"><div class="m-label">2024 Retained</div><div class="m-value" style="color:#f87171">53%</div></div>
+<div class="metric"><div class="m-label">Est. Impact</div><div class="m-value">$15&#8211;25K/yr</div></div>
+</div>
+</div>
+
+<div class="action low">
+<h4>9. Negotiate Processing Fees (Rising 2.81% &#8594; 3.05%) <span class="priority">Strategic</span></h4>
+<div class="detail">
+Processing fees hit $65K in 2025 and the rate is creeping up as cash declines (24% to 17%). At $2M+ in card volume, you have leverage to negotiate with Square or explore alternatives. A cash discount program ("save 3% with cash") could maintain cash volume. Even a 0.15% fee reduction on $1.7M in card payments saves $2,550/yr.
+</div>
+<div class="metrics">
+<div class="metric"><div class="m-label">2023 Fee Rate</div><div class="m-value">2.81%</div></div>
+<div class="metric"><div class="m-label">2025 Fee Rate</div><div class="m-value" style="color:#f87171">3.05%</div></div>
+<div class="metric"><div class="m-label">2025 Fees</div><div class="m-value">$64,805</div></div>
+<div class="metric"><div class="m-label">Est. Impact</div><div class="m-value">$2.5&#8211;5K/yr</div></div>
+</div>
+</div>
+</div>
+
+<p class="note">All estimates are annualized based on 2025 actuals. Impact ranges assume partial implementation in Year 1. Combined potential: $180&#8211;340K on a $2.12M base (8&#8211;16% improvement). Prepared by automated POS data analysis, March 2026.</p>
+</div>
+
+<div class="footer">
+Bella Goose Coffee &#8212; Cafe on the River &#8212; 3-Year Business Intelligence Report &#8226; Data: Square POS (Mar 2023 &#8211; Mar 2026) &#8226; All times US/Mountain &#8226; Generated March 2026
+</div>
+<script>
+var MONTHLY={"labels": ["2023-03", "2023-04", "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12", "2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03"], "revenue": [22061.0, 97434.0, 113016.0, 165483.0, 204824.0, 184434.0, 128846.0, 105956.0, 105750.0, 96251.0, 96496.0, 104520.0, 130549.0, 110331.0, 134882.0, 184050.0, 228224.0, 217837.0, 152326.0, 158354.0, 125567.0, 128249.0, 123209.0, 94914.0, 159920.0, 142009.0, 180998.0, 234535.0, 283076.0, 282269.0, 171283.0, 178027.0, 139933.0, 133389.0, 138657.0, 128894.0, 121906.0], "orders": [1203, 5126, 5961, 7639, 8595, 7980, 6377, 5425, 5583, 4805, 5145, 5591, 6843, 5835, 6969, 8647, 10050, 9991, 7921, 8230, 6661, 6392, 6565, 4927, 8242, 7164, 8979, 10318, 11467, 11196, 8357, 8469, 6788, 6310, 6903, 6327, 5957]};
+var YOY={"2023": [0, 0, 22061.0, 97434.0, 113016.0, 165483.0, 204824.0, 184434.0, 128846.0, 105956.0, 105750.0, 96251.0], "2024": [96496.0, 104520.0, 130549.0, 110331.0, 134882.0, 184050.0, 228224.0, 217837.0, 152326.0, 158354.0, 125567.0, 128249.0], "2025": [123209.0, 94914.0, 159920.0, 142009.0, 180998.0, 234535.0, 283076.0, 282269.0, 171283.0, 178027.0, 139933.0, 133389.0]};
+var YOY_GROWTH={"labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], "g24": [null, null, 491.8, 13.2, 19.3, 11.2, 11.4, 18.1, 18.2, 49.5, 18.7, 33.2], "g25": [27.7, -9.2, 22.5, 28.7, 34.2, 27.4, 24.0, 29.6, 12.4, 12.4, 11.4, 4.0]};
+var SEASONAL={"2023": {"peak": 554740.0, "shoulder": 347818.0, "off": 321496.0}, "2024": {"peak": 630111.0, "shoulder": 445563.0, "off": 695711.0}, "2025": {"peak": 799880.0, "shoulder": 530308.0, "off": 793374.0}};
+var HEATMAP={"rows": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], "cols": ["5:00", "6:00", "7:00", "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"], "data": [[438.0, 19015.0, 37547.0, 45626.0, 46535.0, 39610.0, 27578.0, 17746.0, 12357.0, 11589.0, 7853.0, 745.0], [321.0, 17242.0, 30947.0, 39786.0, 39753.0, 32759.0, 22593.0, 16627.0, 12003.0, 9190.0, 6297.0, 279.0], [484.0, 16590.0, 29624.0, 39669.0, 39524.0, 31318.0, 21646.0, 15403.0, 13213.0, 8999.0, 6187.0, 177.0], [491.0, 17581.0, 31656.0, 36823.0, 39010.0, 28739.0, 21656.0, 16739.0, 11936.0, 8681.0, 6198.0, 460.0], [628.0, 25211.0, 41300.0, 50215.0, 48193.0, 38356.0, 28394.0, 21703.0, 17486.0, 14139.0, 8238.0, 724.0], [950.0, 39544.0, 64207.0, 77241.0, 70796.0, 61436.0, 40547.0, 30795.0, 22158.0, 16652.0, 11309.0, 631.0], [1059.0, 35664.0, 62540.0, 77057.0, 78528.0, 69908.0, 48552.0, 31663.0, 21483.0, 15156.0, 11275.0, 755.0]]};
+var DOW={"labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], "revenue": [266777.0, 227908.0, 222970.0, 220156.0, 294938.0, 436807.0, 454005.0], "avg_day": [5130.0, 4558.0, 4372.0, 4403.0, 5672.0, 8400.0, 8731.0], "orders": [12664, 11322, 11433, 11440, 14197, 18990, 18736]};
+var HOURLY={"labels": ["5:00", "6:00", "7:00", "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"], "peak": [1550.0, 65166.0, 114785.0, 138842.0, 138943.0, 116843.0, 78771.0, 53787.0, 37376.0, 30290.0, 21466.0, 1336.0], "shoulder": [1161.0, 43756.0, 75312.0, 91179.0, 90045.0, 73676.0, 51359.0, 38030.0, 29524.0, 21235.0, 14323.0, 440.0], "off": [1659.0, 61925.0, 107724.0, 136396.0, 133351.0, 111607.0, 80836.0, 58860.0, 43736.0, 32883.0, 21568.0, 1995.0]};
+var ITEM_TABLE=[{"name": "Salted Caramel Latte", "rev_2023": 71648.0, "qty_2023": 12174, "rev_2024": 121114.0, "qty_2024": 19950, "rev_2025": 141809.0, "qty_2025": 22307, "total_rev": 364944.0, "total_qty": 59151, "avg_price": 5.76}, {"name": "Egg Sammie", "rev_2023": 95744.0, "qty_2023": 13016, "rev_2024": 138554.0, "qty_2024": 18263, "rev_2025": 14218.0, "qty_2025": 1761, "total_rev": 248516.0, "total_qty": 33040, "avg_price": 7.2}, {"name": "Vanilla Bean Latte", "rev_2023": 43520.0, "qty_2023": 7553, "rev_2024": 71904.0, "qty_2024": 12142, "rev_2025": 88646.0, "qty_2025": 14265, "total_rev": 221877.0, "total_qty": 36805, "avg_price": 5.49}, {"name": "Latte", "rev_2023": 50433.0, "qty_2023": 9588, "rev_2024": 72425.0, "qty_2024": 13401, "rev_2025": 76594.0, "qty_2025": 13503, "total_rev": 214127.0, "total_qty": 39010, "avg_price": 4.66}, {"name": "Classic Waffle", "rev_2023": 53162.0, "qty_2023": 3844, "rev_2024": 54468.0, "qty_2024": 3884, "rev_2025": 59397.0, "qty_2025": 3980, "total_rev": 176725.0, "total_qty": 12351, "avg_price": 13.44}, {"name": "Beans", "rev_2023": 37203.0, "qty_2023": 2179, "rev_2024": 57875.0, "qty_2024": 3395, "rev_2025": 63862.0, "qty_2025": 3737, "total_rev": 174858.0, "total_qty": 10237, "avg_price": 17.74}, {"name": "Farmer\u2019s Benny", "rev_2023": 38891.0, "qty_2023": 3122, "rev_2024": 54696.0, "qty_2024": 4334, "rev_2025": 66334.0, "qty_2025": 4785, "total_rev": 171593.0, "total_qty": 13063, "avg_price": 12.55}, {"name": "Chocolate Covered Strawberry Waffle", "rev_2023": 40633.0, "qty_2023": 2973, "rev_2024": 48110.0, "qty_2024": 3454, "rev_2025": 62186.0, "qty_2025": 4474, "total_rev": 160345.0, "total_qty": 11573, "avg_price": 12.96}, {"name": "Build Your Own Waffle", "rev_2023": 41733.0, "qty_2023": 3291, "rev_2024": 41498.0, "qty_2024": 3149, "rev_2025": 57792.0, "qty_2025": 4110, "total_rev": 149895.0, "total_qty": 11181, "avg_price": 12.44}, {"name": "Retail Syrup", "rev_2023": 28396.0, "qty_2023": 2659, "rev_2024": 42010.0, "qty_2024": 3958, "rev_2025": 58934.0, "qty_2025": 5661, "total_rev": 143833.0, "total_qty": 13372, "avg_price": 10.42}, {"name": "Avocado Toast", "rev_2023": 0.0, "qty_2023": 0, "rev_2024": 32894.0, "qty_2024": 2873, "rev_2025": 91212.0, "qty_2025": 6728, "total_rev": 141206.0, "total_qty": 10843, "avg_price": 12.18}, {"name": "Cheddar Bacon Sammie", "rev_2023": 0.0, "qty_2023": 0, "rev_2024": 0.0, "qty_2024": 0, "rev_2025": 96652.0, "qty_2025": 10377, "total_rev": 115859.0, "total_qty": 12376, "avg_price": 8.88}, {"name": "House Brew", "rev_2023": 28470.0, "qty_2023": 7785, "rev_2024": 37879.0, "qty_2024": 9812, "rev_2025": 35908.0, "qty_2025": 9182, "total_rev": 109799.0, "total_qty": 28677, "avg_price": 3.67}, {"name": "Butter Pecan Latte", "rev_2023": 14034.0, "qty_2023": 2118, "rev_2024": 29787.0, "qty_2024": 4319, "rev_2025": 43415.0, "qty_2025": 5989, "total_rev": 96540.0, "total_qty": 13687, "avg_price": 6.52}, {"name": "Honey Cinnamon Latte", "rev_2023": 19355.0, "qty_2023": 3407, "rev_2024": 29919.0, "qty_2024": 5030, "rev_2025": 37112.0, "qty_2025": 5938, "total_rev": 93532.0, "total_qty": 15518, "avg_price": 5.45}, {"name": "Cheddar Sausage Sammie", "rev_2023": 0.0, "qty_2023": 0, "rev_2024": 0.0, "qty_2024": 0, "rev_2025": 77494.0, "qty_2025": 8284, "total_rev": 92468.0, "total_qty": 9833, "avg_price": 8.89}, {"name": "Chai Tea Latte", "rev_2023": 19716.0, "qty_2023": 3457, "rev_2024": 31948.0, "qty_2024": 5365, "rev_2025": 30391.0, "qty_2025": 5137, "total_rev": 88247.0, "total_qty": 15013, "avg_price": 5.42}, {"name": "Biscuit Cinnamon Roll", "rev_2023": 22372.0, "qty_2023": 5081, "rev_2024": 31036.0, "qty_2024": 6782, "rev_2025": 29354.0, "qty_2025": 6412, "total_rev": 87322.0, "total_qty": 19272, "avg_price": 4.5}, {"name": "Smoothie", "rev_2023": 36013.0, "qty_2023": 5079, "rev_2024": 47367.0, "qty_2024": 6618, "rev_2025": 3653.0, "qty_2025": 453, "total_rev": 87033.0, "total_qty": 12150, "avg_price": 7.12}, {"name": "Wisconsin Bowl", "rev_2023": 29727.0, "qty_2023": 2249, "rev_2024": 39424.0, "qty_2024": 2911, "rev_2025": 0.0, "qty_2025": 0, "total_rev": 69151.0, "total_qty": 5160, "avg_price": 12.83}, {"name": "BST & Chips", "rev_2023": 23045.0, "qty_2023": 2086, "rev_2024": 37077.0, "qty_2024": 3083, "rev_2025": 7362.0, "qty_2025": 511, "total_rev": 67483.0, "total_qty": 5680, "avg_price": 11.61}, {"name": "Cold Brew", "rev_2023": 19416.0, "qty_2023": 3224, "rev_2024": 25698.0, "qty_2024": 4203, "rev_2025": 16950.0, "qty_2025": 2797, "total_rev": 64766.0, "total_qty": 10632, "avg_price": 5.68}, {"name": "Biscuits & Gravy", "rev_2023": 17734.0, "qty_2023": 1885, "rev_2024": 20104.0, "qty_2024": 2139, "rev_2025": 22337.0, "qty_2025": 2096, "total_rev": 64732.0, "total_qty": 6528, "avg_price": 9.48}, {"name": "Pumpkin Pie Latte", "rev_2023": 13387.0, "qty_2023": 2062, "rev_2024": 18687.0, "qty_2024": 2794, "rev_2025": 22206.0, "qty_2025": 3305, "total_rev": 55933.0, "total_qty": 8414, "avg_price": 6.15}, {"name": "Flannel", "rev_2023": 10162.0, "qty_2023": 1745, "rev_2024": 16693.0, "qty_2024": 2724, "rev_2025": 18512.0, "qty_2025": 2856, "total_rev": 53322.0, "total_qty": 8550, "avg_price": 5.75}];
+var TOP_ITEMS={"labels": ["Salted Caramel Latte", "Egg Sammie", "Vanilla Bean Latte", "Latte", "Classic Waffle", "Beans", "Farmer\u2019s Benny", "Chocolate Covered Strawberry Waffle", "Build Your Own Waffle", "Retail Syrup", "Avocado Toast", "Cheddar Bacon Sammie", "House Brew", "Butter Pecan Latte", "Honey Cinnamon Latte"], "values": [364944.0, 248516.0, 221877.0, 214127.0, 176725.0, 174858.0, 171593.0, 160345.0, 149895.0, 143833.0, 141206.0, 115859.0, 109799.0, 96540.0, 93532.0]};
+var PRODUCT_GROWTH={"labels": ["Avocado Toast", "Salted Caramel Latte", "Retail Syrup", "Vanilla Bean Latte", "Build Your Own Waffle", "Chocolate Covered Strawberry Waffle", "Butter Pecan Latte", "Farmer\u2019s Benny", "Egg Sammie", "Smoothie", "BST & Chips", "Wagyoose Breakfast Burger", "A la Carte"], "values": [58318.0, 20695.0, 16925.0, 16743.0, 16294.0, 14075.0, 13628.0, 11638.0, -124336.0, -43714.0, -29715.0, -22959.0, -21838.0], "pct": [177.3, 17.1, 40.3, 23.3, 39.3, 29.3, 45.8, 21.3, -89.7, -92.3, -80.1, -84.7, -90.8]};
+var DRINK_FOOD_YEARLY={"2023": {"drink": 435596.0, "food": 788458.0}, "2024": {"drink": 672145.0, "food": 1099239.0}, "2025": {"drink": 856790.0, "food": 1266772.0}};
+var ORDER_COMP={"labels": ["Drink Only", "Food Only", "Combo"], "counts": [90490, 41924, 131376], "aov": [8.83, 16.37, 30.62]};
+var ATTACH_RATE={"2023": 63.4, "2024": 59.5, "2025": 56.9};
+var MODIFIERS={"labels": ["Whole", "Fried", "Oat", "Almond", "Caramel", "+1 Shot", "Scrambled", "Decaf", "Half Sweet", "Skim", "+ Whip", "No Whip", "Strawberries", "Vanilla", "Whipped Cream"], "values": [214337, 67865, 36909, 15062, 10821, 9803, 9463, 8906, 8154, 7608, 7279, 6693, 6554, 5888, 5298]};
+var AOV={"labels": ["2023-03", "2023-04", "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12", "2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03"], "values": [18.34, 19.01, 18.96, 21.66, 23.83, 23.11, 20.2, 19.53, 18.94, 20.03, 18.76, 18.69, 19.08, 18.91, 19.35, 21.28, 22.71, 21.8, 19.23, 19.24, 18.85, 20.06, 18.77, 19.26, 19.4, 19.82, 20.16, 22.73, 24.69, 25.21, 20.5, 21.02, 20.61, 21.14, 20.09, 20.37, 20.46]};
+var LABOR_MONTHLY={"labels": ["2023-03", "2023-04", "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12", "2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03"], "values": [4046.0, 21664.0, 24614.0, 33113.0, 34574.0, 33310.0, 27570.0, 30505.0, 32922.0, 31504.0, 32011.0, 31017.0, 33341.0, 33332.0, 40403.0, 49087.0, 49602.0, 44881.0, 31167.0, 33536.0, 29180.0, 31202.0, 32743.0, 28861.0, 36177.0, 37472.0, 40047.0, 46361.0, 51344.0, 52420.0, 40011.0, 39830.0, 39418.0, 38870.0, 35698.0, 31804.0, 28763.0], "hours": [373.0, 2008.0, 2236.0, 3028.0, 3162.0, 3032.0, 2437.0, 2567.0, 2864.0, 2672.0, 2677.0, 2467.0, 2750.0, 2670.0, 3238.0, 3996.0, 4112.0, 3652.0, 2516.0, 2673.0, 2382.0, 2535.0, 2552.0, 2169.0, 2746.0, 2798.0, 3049.0, 3722.0, 4138.0, 4118.0, 3015.0, 2934.0, 2852.0, 2758.0, 2617.0, 2320.0, 2111.0]};
+var REV_VS_LABOR={"labels": ["2023-03", "2023-04", "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12", "2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03"], "revenue": [22061.0, 97434.0, 113016.0, 165483.0, 204824.0, 184434.0, 128846.0, 105956.0, 105750.0, 96251.0, 96496.0, 104520.0, 130549.0, 110331.0, 134882.0, 184050.0, 228224.0, 217837.0, 152326.0, 158354.0, 125567.0, 128249.0, 123209.0, 94914.0, 159920.0, 142009.0, 180998.0, 234535.0, 283076.0, 282269.0, 171283.0, 178027.0, 139933.0, 133389.0, 138657.0, 128894.0, 121906.0], "labor": [4046.0, 21664.0, 24614.0, 33113.0, 34574.0, 33310.0, 27570.0, 30505.0, 32922.0, 31504.0, 32011.0, 31017.0, 33341.0, 33332.0, 40403.0, 49087.0, 49602.0, 44881.0, 31167.0, 33536.0, 29180.0, 31202.0, 32743.0, 28861.0, 36177.0, 37472.0, 40047.0, 46361.0, 51344.0, 52420.0, 40011.0, 39830.0, 39418.0, 38870.0, 35698.0, 31804.0, 28763.0]};
+var LABOR_PCT={"labels": ["2023-03", "2023-04", "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12", "2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03"], "values": [18.3, 22.2, 21.8, 20.0, 16.9, 18.1, 21.4, 28.8, 31.1, 32.7, 33.2, 29.7, 25.5, 30.2, 30.0, 26.7, 21.7, 20.6, 20.5, 21.2, 23.2, 24.3, 26.6, 30.4, 22.6, 26.4, 22.1, 19.8, 18.1, 18.6, 23.4, 22.4, 28.2, 29.1, 25.7, 24.7, 23.6]};
+var LABOR_ROLES=[{"title": "Barista", "cost": 257681.0, "hours": 32075.0, "employees": 51}, {"title": "Shift Leader", "cost": 231185.0, "hours": 23108.0, "employees": 18}, {"title": "Line Cook", "cost": 198424.0, "hours": 12320.0, "employees": 34}, {"title": "Manager", "cost": 123761.0, "hours": 5622.0, "employees": 3}, {"title": "Marketing Director", "cost": 88455.0, "hours": 4225.0, "employees": 1}, {"title": "Dishwasher", "cost": 74842.0, "hours": 6294.0, "employees": 36}, {"title": "Paid Time Off", "cost": 62177.0, "hours": 3747.0, "employees": 24}, {"title": "Prep Cook", "cost": 51166.0, "hours": 3491.0, "employees": 24}, {"title": "Kitchen Coordinator - Line", "cost": 34708.0, "hours": 1631.0, "employees": 1}, {"title": "Meetings", "cost": 20909.0, "hours": 1511.0, "employees": 77}, {"title": "Purchasing Manager", "cost": 18982.0, "hours": 1011.0, "employees": 3}, {"title": "Kitchen Coordinator - Prep", "cost": 17850.0, "hours": 841.0, "employees": 1}];
+var REV_PER_HOUR={"labels": ["2023 Q1", "2023 Q2", "2023 Q3", "2023 Q4", "2024 Q1", "2024 Q2", "2024 Q3", "2024 Q4", "2025 Q1", "2025 Q2", "2025 Q3", "2025 Q4"], "values": [59.18, 51.7, 60.03, 38.01, 42.0, 43.34, 58.21, 54.31, 50.63, 58.26, 65.35, 52.83]};
+var RETENTION={"2023": {"total": 55, "retained": 34}, "2024": {"total": 64, "retained": 34}, "2025": {"total": 66, "retained": 66}};
+var WAGE_TREND={"labels": ["2023-03", "2023-04", "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12", "2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03"], "values": [11.14, 10.81, 11.52, 11.5, 11.48, 11.66, 11.62, 11.86, 11.58, 11.98, 11.94, 12.68, 12.61, 12.78, 12.77, 12.67, 12.35, 12.54, 12.69, 12.87, 12.87, 12.62, 13.14, 13.75, 13.51, 13.7, 13.49, 12.74, 12.49, 12.98, 13.53, 13.93, 14.2, 14.02, 13.93, 13.93, 13.85]};
+var DISCOUNTS={"labels": ["2023 Q1", "2023 Q2", "2023 Q3", "2023 Q4", "2024 Q1", "2024 Q2", "2024 Q3", "2024 Q4", "2025 Q1", "2025 Q2", "2025 Q3", "2025 Q4"], "rate": [6.7, 3.9, 2.8, 6.2, 5.0, 4.1, 3.1, 5.0, 4.4, 3.4, 3.3, 4.1], "total": [1583.0, 15457.0, 14738.0, 20341.0, 17343.0, 18471.0, 18829.0, 21521.0, 17268.0, 19410.0, 25066.0, 19202.0]};
+var TIPS={"labels": ["2023-03", "2023-04", "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12", "2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03"], "total": [2038.0, 9990.0, 11076.0, 15538.0, 19848.0, 17666.0, 12544.0, 10477.0, 10197.0, 8622.0, 8515.0, 10389.0, 12390.0, 10900.0, 12210.0, 16848.0, 22129.0, 21494.0, 14936.0, 15366.0, 12187.0, 11987.0, 12046.0, 9711.0, 16610.0, 14623.0, 17244.0, 22920.0, 27180.0, 27415.0, 16538.0, 17907.0, 12685.0, 11634.0, 12451.0, 12071.0, 11205.0], "avg": [3.29, 3.44, 3.42, 3.71, 4.06, 3.92, 3.54, 3.5, 3.43, 3.49, 3.35, 3.53, 3.33, 3.32, 3.3, 3.5, 3.95, 3.82, 3.43, 3.35, 3.32, 3.43, 3.3, 3.42, 3.42, 3.43, 3.42, 3.87, 4.18, 4.36, 3.62, 3.67, 3.45, 3.6, 3.4, 3.5, 3.42], "rate": [52.6, 56.3, 54.3, 54.8, 56.9, 56.5, 55.5, 55.1, 53.0, 51.3, 49.1, 52.5, 54.1, 56.1, 53.1, 55.6, 55.8, 56.4, 55.0, 55.7, 55.1, 54.4, 55.2, 57.2, 58.8, 59.4, 55.9, 57.3, 56.7, 56.1, 54.5, 57.4, 54.0, 51.0, 52.7, 54.3, 54.8]};
+var FEES={"labels": ["2023", "2024", "2025"], "amount": [34396.0, 51826.0, 64805.0], "rate": [2.81, 2.92, 3.05]};
+var PAYMENT_TREND={"2023": {"card_pct": 75.9, "cash_pct": 24.1}, "2024": {"card_pct": 77.7, "cash_pct": 22.2}, "2025": {"card_pct": 82.0, "cash_pct": 17.9}};
+var GIFT_CARDS={"labels": ["2023", "2024", "2025"], "amount": [7442.0, 11515.0, 16227.0], "count": [609, 988, 1227]};
+var PNL={"2023": {"gross": 1276174.0, "discounts": 52120.0, "net_revenue": 1224054.0, "labor": 273823.0, "fees": 34396.0, "tips": 117996.0, "margin_after_labor": 950231.0, "margin_pct": 77.6}, "2024": {"gross": 1847547.0, "discounts": 76163.0, "net_revenue": 1771384.0, "labor": 438759.0, "fees": 51826.0, "tips": 169351.0, "margin_after_labor": 1332625.0, "margin_pct": 75.2}, "2025": {"gross": 2204509.0, "discounts": 80947.0, "net_revenue": 2123562.0, "labor": 483555.0, "fees": 64805.0, "tips": 206513.0, "margin_after_labor": 1640007.0, "margin_pct": 77.2}};
+
+Chart.defaults.color='#6b7590';
+Chart.defaults.borderColor='#1e2640';
+Chart.defaults.font.family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif";
+Chart.defaults.font.size=11;
+var gold='#d4a843',amber='#f59e0b',red='#f87171',green='#34d399',blue='#60a5fa',purple='#a78bfa',cyan='#22d3ee',rose='#fb7185',lime='#a3e635',orange='#fb923c',indigo='#818cf8',teal='#2dd4bf';
+var palette=[gold,blue,green,rose,purple,cyan,amber,orange,lime,red,indigo,teal,'#e879f9','#facc15','#94a3b8'];
+function fmt(n){if(n>=1e6)return '$'+(n/1e6).toFixed(1)+'M';if(n>=1e3)return '$'+(n/1e3).toFixed(1)+'K';return '$'+n.toLocaleString();}
+function fmtN(n){return n.toLocaleString();}
+function fmtP(n){return n.toFixed(1)+'%';}
+
+function showPage(id){
+  var pages=document.querySelectorAll('.page');
+  var tabs=document.querySelectorAll('.tab');
+  for(var i=0;i<pages.length;i++){pages[i].classList.remove('active');}
+  for(var i=0;i<tabs.length;i++){tabs[i].classList.remove('active');}
+  document.getElementById(id).classList.add('active');
+  var map={'executive':'Executive Summary','growth':'Growth Analysis','seasonal':'Seasonality','products':'Product Mix','customers':'Order Behavior','labor':'Labor & Staffing','financials':'Financial Health','actions':'Action Plan'};
+  for(var i=0;i<tabs.length;i++){if(tabs[i].textContent===map[id])tabs[i].classList.add('active');}
+}
+
+// ===== EXECUTIVE TAB =====
+new Chart(document.getElementById('c_timeline'),{type:'line',data:{labels:MONTHLY.labels,datasets:[{label:'Revenue',data:MONTHLY.revenue,borderColor:gold,backgroundColor:gold+'22',fill:true,tension:0.3,pointRadius:1.5,borderWidth:2}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fmt(c.parsed.y);}}}},scales:{y:{ticks:{callback:function(v){return fmt(v);}}}}}});
+
+new Chart(document.getElementById('c_yoy'),{type:'bar',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],datasets:[{label:'2023',data:YOY['2023'],backgroundColor:blue+'88',borderRadius:3},{label:'2024',data:YOY['2024'],backgroundColor:amber+'88',borderRadius:3},{label:'2025',data:YOY['2025'],backgroundColor:green,borderRadius:3}]},options:{responsive:true,plugins:{legend:{position:'top',labels:{boxWidth:12}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+fmt(c.parsed.y);}}}},scales:{y:{ticks:{callback:function(v){return fmt(v);}}}}}});
+
+new Chart(document.getElementById('c_aov'),{type:'line',data:{labels:AOV.labels,datasets:[{label:'AOV',data:AOV.values,borderColor:green,tension:0.3,pointRadius:2,borderWidth:2}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return '$'+v.toFixed(2);}}}}}});
+
+// ===== GROWTH TAB =====
+new Chart(document.getElementById('c_growth_rate'),{type:'bar',data:{labels:YOY_GROWTH.labels,datasets:[{label:'2023->2024',data:YOY_GROWTH.g24,backgroundColor:amber+'88',borderRadius:3},{label:'2024->2025',data:YOY_GROWTH.g25,backgroundColor:green,borderRadius:3}]},options:{responsive:true,plugins:{legend:{position:'top',labels:{boxWidth:12}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+(c.parsed.y>=0?'+':'')+c.parsed.y+'%';}}}},scales:{y:{ticks:{callback:function(v){return v+'%';}}}}}});
+
+new Chart(document.getElementById('c_seasonal'),{type:'bar',data:{labels:['2023','2024','2025'],datasets:[{label:'Peak (Jun-Aug)',data:[SEASONAL['2023'].peak,SEASONAL['2024'].peak,SEASONAL['2025'].peak],backgroundColor:red+'cc',borderRadius:3},{label:'Shoulder (May,Sep,Oct)',data:[SEASONAL['2023'].shoulder,SEASONAL['2024'].shoulder,SEASONAL['2025'].shoulder],backgroundColor:amber+'cc',borderRadius:3},{label:'Off-Season',data:[SEASONAL['2023'].off,SEASONAL['2024'].off,SEASONAL['2025'].off],backgroundColor:blue+'cc',borderRadius:3}]},options:{responsive:true,plugins:{legend:{position:'top',labels:{boxWidth:12}}},scales:{y:{stacked:true,ticks:{callback:function(v){return fmt(v);}}},x:{stacked:true}}}});
+
+// ===== SEASONAL TAB =====
+new Chart(document.getElementById('c_dow'),{type:'bar',data:{labels:DOW.labels,datasets:[{label:'Total Revenue',data:DOW.revenue,backgroundColor:DOW.labels.map(function(d){return(d==='Sat'||d==='Sun')?gold:blue+'aa';}),borderRadius:6}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return fmt(v);}}}}}});
+
+new Chart(document.getElementById('c_dow_avg'),{type:'bar',data:{labels:DOW.labels,datasets:[{label:'Avg Rev/Day',data:DOW.avg_day,backgroundColor:DOW.labels.map(function(d){return(d==='Sat'||d==='Sun')?gold:blue+'aa';}),borderRadius:6}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return fmt(v);}}}}}});
+
+new Chart(document.getElementById('c_hourly'),{type:'bar',data:{labels:HOURLY.labels,datasets:[{label:'Peak (Jun-Aug)',data:HOURLY.peak,backgroundColor:red+'99',borderRadius:3},{label:'Shoulder',data:HOURLY.shoulder,backgroundColor:amber+'99',borderRadius:3},{label:'Off-Season',data:HOURLY.off,backgroundColor:blue+'99',borderRadius:3}]},options:{responsive:true,plugins:{legend:{position:'top',labels:{boxWidth:12}}},scales:{y:{ticks:{callback:function(v){return fmt(v);}}}}}});
+
+// Heatmap
+(function(){
+  var t=document.getElementById('heatmapTable');
+  var maxVal=0;
+  for(var i=0;i<HEATMAP.data.length;i++)for(var j=0;j<HEATMAP.data[i].length;j++)if(HEATMAP.data[i][j]>maxVal)maxVal=HEATMAP.data[i][j];
+  var html='<thead><tr><th></th>';
+  for(var j=0;j<HEATMAP.cols.length;j++)html+='<th>'+HEATMAP.cols[j]+'</th>';
+  html+='</tr></thead><tbody>';
+  for(var i=0;i<HEATMAP.data.length;i++){
+    html+='<tr><td class="row-label">'+HEATMAP.rows[i]+'</td>';
+    for(var j=0;j<HEATMAP.data[i].length;j++){
+      var v=HEATMAP.data[i][j];
+      var intensity=v/maxVal;
+      var r=Math.round(212*intensity+20*(1-intensity));
+      var g=Math.round(168*intensity+26*(1-intensity));
+      var b=Math.round(67*intensity+46*(1-intensity));
+      var textColor=intensity>0.5?'#0a0f1a':'#6b7590';
+      html+='<td style="background:rgba('+r+','+g+','+b+','+Math.max(intensity*0.9,0.05)+');color:'+textColor+'">'+fmt(v)+'</td>';
+    }
+    html+='</tr>';
+  }
+  html+='</tbody>';
+  t.innerHTML=html;
+})();
+
+// ===== PRODUCTS TAB =====
+new Chart(document.getElementById('c_top_items'),{type:'bar',data:{labels:TOP_ITEMS.labels,datasets:[{label:'Revenue',data:TOP_ITEMS.values,backgroundColor:palette}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fmt(c.parsed.x);}}}},scales:{x:{ticks:{callback:function(v){return fmt(v);}}}}}});
+
+new Chart(document.getElementById('c_product_growth'),{type:'bar',data:{labels:PRODUCT_GROWTH.labels,datasets:[{label:'Change',data:PRODUCT_GROWTH.values,backgroundColor:PRODUCT_GROWTH.values.map(function(v){return v>=0?green:red;}),borderRadius:3}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){var i=c.dataIndex;return (c.parsed.x>=0?'+':'')+fmt(c.parsed.x)+' ('+PRODUCT_GROWTH.pct[i]+'%)';}}}},scales:{x:{ticks:{callback:function(v){return(v>=0?'+':'')+fmt(v);}}}}}});
+
+new Chart(document.getElementById('c_drink_food'),{type:'bar',data:{labels:['2023','2024','2025'],datasets:[{label:'Drinks',data:[DRINK_FOOD_YEARLY['2023'].drink,DRINK_FOOD_YEARLY['2024'].drink,DRINK_FOOD_YEARLY['2025'].drink],backgroundColor:blue+'cc',borderRadius:3},{label:'Food/Retail',data:[DRINK_FOOD_YEARLY['2023'].food,DRINK_FOOD_YEARLY['2024'].food,DRINK_FOOD_YEARLY['2025'].food],backgroundColor:amber+'cc',borderRadius:3}]},options:{responsive:true,plugins:{legend:{position:'top',labels:{boxWidth:12}}},scales:{y:{ticks:{callback:function(v){return fmt(v);}}}}}});
+
+new Chart(document.getElementById('c_modifiers'),{type:'bar',data:{labels:MODIFIERS.labels,datasets:[{label:'Count',data:MODIFIERS.values,backgroundColor:cyan,borderRadius:3}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}}}});
+
+// Item sortable table
+(function(){
+  var table=document.getElementById('itemTable');
+  var cols=[{k:'name',l:'Item',fmt:'text'},{k:'total_rev',l:'3yr Rev',fmt:'$'},{k:'total_qty',l:'3yr Qty',fmt:'n'},{k:'avg_price',l:'Avg Price',fmt:'p'},{k:'rev_2023',l:'2023 Rev',fmt:'$'},{k:'rev_2024',l:'2024 Rev',fmt:'$'},{k:'rev_2025',l:'2025 Rev',fmt:'$'},{k:'qty_2025',l:'2025 Qty',fmt:'n'}];
+  var data=ITEM_TABLE;
+  var sortKey='total_rev',sortDir='desc';
+  function render(){
+    var sorted=data.slice().sort(function(a,b){var av=a[sortKey],bv=b[sortKey];if(typeof av==='string')return sortDir==='asc'?av.localeCompare(bv):bv.localeCompare(av);return sortDir==='asc'?av-bv:bv-av;});
+    var html='<thead><tr>';
+    cols.forEach(function(c){var arrow=sortKey===c.k?(sortDir==='asc'?' &#9650;':' &#9660;'):'';html+='<th onclick="sortItems(\x27'+c.k+'\x27)" '+(c.fmt!=='text'?'class="num"':'')+'>'+c.l+'<span class="sort-arrow">'+arrow+'</span></th>';});
+    html+='</tr></thead><tbody>';
+    sorted.forEach(function(r){
+      html+='<tr>';
+      cols.forEach(function(c){
+        var v=r[c.k];
+        var display=c.fmt==='$'?fmt(v):c.fmt==='n'?fmtN(v):c.fmt==='p'?('$'+v.toFixed(2)):v;
+        html+='<td'+(c.fmt!=='text'?' class="num"':'')+'>'+display+'</td>';
+      });
+      html+='</tr>';
+    });
+    html+='</tbody>';
+    table.innerHTML=html;
+  }
+  window.sortItems=function(k){if(sortKey===k)sortDir=sortDir==='asc'?'desc':'asc';else{sortKey=k;sortDir='desc';}render();};
+  render();
+})();
+
+// ===== ORDER BEHAVIOR TAB =====
+new Chart(document.getElementById('c_order_comp'),{type:'doughnut',data:{labels:ORDER_COMP.labels,datasets:[{data:ORDER_COMP.counts,backgroundColor:[blue,amber,green]}]},options:{responsive:true,cutout:'55%',plugins:{legend:{position:'bottom',labels:{boxWidth:12}},tooltip:{callbacks:{label:function(c){var total=c.dataset.data.reduce(function(a,b){return a+b;},0);return c.label+': '+fmtN(c.parsed)+' ('+(c.parsed/total*100).toFixed(1)+'%)';}}}}}} );
+
+new Chart(document.getElementById('c_attach'),{type:'bar',data:{labels:['2023','2024','2025'],datasets:[{label:'Food Attach Rate',data:[ATTACH_RATE['2023'],ATTACH_RATE['2024'],ATTACH_RATE['2025']],backgroundColor:[green,amber,red],borderRadius:6}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:50,max:70,ticks:{callback:function(v){return v+'%';}}}}}});
+
+new Chart(document.getElementById('c_aov_comp'),{type:'bar',data:{labels:ORDER_COMP.labels,datasets:[{label:'Avg Order Value',data:ORDER_COMP.aov,backgroundColor:[blue,amber,green],borderRadius:6}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return '$'+v.toFixed(2);}}}}}});
+
+new Chart(document.getElementById('c_tips_trend'),{type:'line',data:{labels:TIPS.labels,datasets:[{label:'Tip Rate %',data:TIPS.rate,borderColor:green,tension:0.3,pointRadius:1,yAxisID:'y'},{label:'Avg Tip $',data:TIPS.avg,borderColor:gold,tension:0.3,pointRadius:1,yAxisID:'y1'}]},options:{responsive:true,plugins:{legend:{position:'top',labels:{boxWidth:12}}},scales:{y:{position:'left',ticks:{callback:function(v){return v+'%';}}},y1:{position:'right',grid:{display:false},ticks:{callback:function(v){return '$'+v.toFixed(2);}}}}}});
+
+// ===== LABOR TAB =====
+new Chart(document.getElementById('c_rev_labor'),{type:'line',data:{labels:REV_VS_LABOR.labels,datasets:[{label:'Revenue',data:REV_VS_LABOR.revenue,borderColor:green,tension:0.3,pointRadius:1,borderWidth:2},{label:'Labor Cost',data:REV_VS_LABOR.labor,borderColor:red,tension:0.3,pointRadius:1,borderWidth:2}]},options:{responsive:true,plugins:{legend:{position:'top',labels:{boxWidth:12}}},scales:{y:{ticks:{callback:function(v){return fmt(v);}}}}}});
+
+new Chart(document.getElementById('c_labor_pct'),{type:'line',data:{labels:LABOR_PCT.labels,datasets:[{label:'Labor %',data:LABOR_PCT.values,borderColor:amber,backgroundColor:amber+'22',fill:true,tension:0.3,pointRadius:2}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return v+'%';}}}}}});
+
+new Chart(document.getElementById('c_rev_per_hour'),{type:'bar',data:{labels:REV_PER_HOUR.labels,datasets:[{label:'$/Hour',data:REV_PER_HOUR.values,backgroundColor:REV_PER_HOUR.values.map(function(v){return v>55?green:v>45?amber:red;}),borderRadius:3}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return '$'+v;}}}}}});
+
+new Chart(document.getElementById('c_labor_roles'),{type:'bar',data:{labels:LABOR_ROLES.map(function(r){return r.title;}),datasets:[{label:'Cost',data:LABOR_ROLES.map(function(r){return r.cost;}),backgroundColor:palette}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){var r=LABOR_ROLES[c.dataIndex];return fmt(r.cost)+' | '+fmtN(r.hours)+' hrs | '+r.employees+' people';}}}},scales:{x:{ticks:{callback:function(v){return fmt(v);}}}}}});
+
+new Chart(document.getElementById('c_wage'),{type:'line',data:{labels:WAGE_TREND.labels,datasets:[{label:'Avg Hourly Rate',data:WAGE_TREND.values,borderColor:purple,tension:0.3,pointRadius:1}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return '$'+v.toFixed(2);}}}}}});
+
+// Labor detail table
+(function(){
+  var t=document.getElementById('laborTable');
+  var html='<thead><tr><th>Role</th><th class="num">Cost</th><th class="num">Hours</th><th class="num">Employees</th><th class="num">Avg $/Hr</th></tr></thead><tbody>';
+  LABOR_ROLES.forEach(function(r){
+    html+='<tr><td>'+r.title+'</td><td class="num">'+fmt(r.cost)+'</td><td class="num">'+fmtN(r.hours)+'</td><td class="num">'+r.employees+'</td><td class="num">$'+(r.cost/Math.max(r.hours,1)).toFixed(2)+'</td></tr>';
+  });
+  html+='</tbody>';
+  t.innerHTML=html;
+})();
+
+// ===== FINANCIALS TAB =====
+new Chart(document.getElementById('c_disc_rate'),{type:'line',data:{labels:DISCOUNTS.labels,datasets:[{label:'Discount Rate',data:DISCOUNTS.rate,borderColor:red,backgroundColor:red+'22',fill:true,tension:0.3,pointRadius:3}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return v+'%';}}}}}});
+
+new Chart(document.getElementById('c_disc_dollar'),{type:'bar',data:{labels:DISCOUNTS.labels,datasets:[{label:'Discounts',data:DISCOUNTS.total,backgroundColor:amber,borderRadius:3}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return fmt(v);}}}}}});
+
+new Chart(document.getElementById('c_tips_monthly'),{type:'bar',data:{labels:TIPS.labels,datasets:[{label:'Tips',data:TIPS.total,backgroundColor:green+'88',borderRadius:2}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return fmt(v);}}}}}});
+
+new Chart(document.getElementById('c_gift'),{type:'bar',data:{labels:GIFT_CARDS.labels,datasets:[{label:'Gift Card Revenue',data:GIFT_CARDS.amount,backgroundColor:[blue,amber,green],borderRadius:6}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return fmt(v);}}}}}});
+
+new Chart(document.getElementById('c_fees'),{type:'bar',data:{labels:FEES.labels,datasets:[{label:'Fee Amount',data:FEES.amount,backgroundColor:red+'88',borderRadius:6,yAxisID:'y'},{label:'Fee Rate %',data:FEES.rate,type:'line',borderColor:gold,pointRadius:6,pointBackgroundColor:gold,yAxisID:'y1'}]},options:{responsive:true,plugins:{legend:{position:'top',labels:{boxWidth:12}}},scales:{y:{position:'left',ticks:{callback:function(v){return fmt(v);}}},y1:{position:'right',grid:{display:false},ticks:{callback:function(v){return v+'%';}}}}}});
+
+new Chart(document.getElementById('c_pay_shift'),{type:'bar',data:{labels:['2023','2024','2025'],datasets:[{label:'Card %',data:[PAYMENT_TREND['2023'].card_pct,PAYMENT_TREND['2024'].card_pct,PAYMENT_TREND['2025'].card_pct],backgroundColor:blue+'cc',borderRadius:3},{label:'Cash %',data:[PAYMENT_TREND['2023'].cash_pct,PAYMENT_TREND['2024'].cash_pct,PAYMENT_TREND['2025'].cash_pct],backgroundColor:green+'cc',borderRadius:3}]},options:{responsive:true,plugins:{legend:{position:'top',labels:{boxWidth:12}}},scales:{y:{stacked:true,max:100,ticks:{callback:function(v){return v+'%';}}},x:{stacked:true}}}});
+</script>
+</body>
+</html>
